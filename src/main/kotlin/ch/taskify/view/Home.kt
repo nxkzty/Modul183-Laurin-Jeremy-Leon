@@ -7,7 +7,7 @@ import com.vaadin.flow.router.Route
 import jakarta.annotation.PostConstruct
 
 @Route("/")
-class ExampleView : VerticalLayout() {
+class Home : VerticalLayout() {
     @PostConstruct
     fun init() {
         add("Hello World")
