@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: taskify
+  docker:
+    compose:
+      lifecycle-management: start_only
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: true
+vaadin:
+  launch-browser: true
