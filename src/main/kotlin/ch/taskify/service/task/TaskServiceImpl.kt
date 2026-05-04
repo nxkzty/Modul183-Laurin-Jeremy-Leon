@@ -20,6 +20,7 @@ import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
 import org.springframework.stereotype.Service
 import jakarta.persistence.EntityNotFoundException
+import java.util.UUID
 
 @Service
 class TaskServiceImpl(
@@ -30,7 +31,7 @@ class TaskServiceImpl(
         return taskRepository.save(task)
     }
 
-    override fun getById(id: Long): Task {
+    override fun getById(id: UUID): Task {
         return taskRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Task with id $id not found") }
     }
@@ -39,7 +40,7 @@ class TaskServiceImpl(
         return taskRepository.findAll()
     }
 
-    override fun update(id: Long, task: Task): Task {
+    override fun update(id: UUID, task: Task): Task {
         val existing = getById(id)
 
         existing.title = task.title
@@ -52,7 +53,7 @@ class TaskServiceImpl(
         return taskRepository.save(existing)
     }
 
-    override fun delete(id: Long) {
+    override fun delete(id: UUID) {
         if (!taskRepository.existsById(id)) {
             throw EntityNotFoundException("Task with id $id not found")
         }
