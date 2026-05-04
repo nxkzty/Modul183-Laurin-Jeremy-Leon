@@ -24,12 +24,12 @@ CREATE TABLE team
 
 CREATE TABLE team_tasks
 (
-    team_id  UUID NOT NULL,
-    tasks_id UUID NOT NULL,
-    CONSTRAINT pk_team_tasks PRIMARY KEY (team_id, tasks_id)
+    team_id UUID NOT NULL,
+    task_id UUID NOT NULL,
+    CONSTRAINT pk_team_tasks PRIMARY KEY (team_id, task_id)
 );
 
-CREATE TABLE "user"
+CREATE TABLE user_entity
 (
     id            UUID NOT NULL,
     updated_at    TIMESTAMP WITHOUT TIME ZONE,
@@ -37,33 +37,33 @@ CREATE TABLE "user"
     name          VARCHAR(255),
     password_hash VARCHAR(255),
     role          VARCHAR(255),
-    CONSTRAINT pk_user PRIMARY KEY (id)
+    CONSTRAINT pk_user_entity PRIMARY KEY (id)
 );
 
-CREATE TABLE user_teams
+CREATE TABLE user_entity_teams
 (
-    user_id  UUID NOT NULL,
-    teams_id UUID NOT NULL,
-    CONSTRAINT pk_user_teams PRIMARY KEY (user_id, teams_id)
+    user_entity_id UUID NOT NULL,
+    team_id        UUID NOT NULL,
+    CONSTRAINT pk_user_entity_teams PRIMARY KEY (user_entity_id, team_id)
 );
 
 ALTER TABLE team_tasks
-    ADD CONSTRAINT uc_team_tasks_tasks UNIQUE (tasks_id);
+    ADD CONSTRAINT uc_team_tasks_task UNIQUE (task_id);
 
 ALTER TABLE task
-    ADD CONSTRAINT FK_TASK_ON_ASSIGNEE FOREIGN KEY (assignee_id) REFERENCES "user" (id);
+    ADD CONSTRAINT fk_task_on_assignee FOREIGN KEY (assignee_id) REFERENCES user_entity (id);
 
 ALTER TABLE task
-    ADD CONSTRAINT FK_TASK_ON_ISSUER FOREIGN KEY (issuer_id) REFERENCES "user" (id);
+    ADD CONSTRAINT fk_task_on_issuer FOREIGN KEY (issuer_id) REFERENCES user_entity (id);
 
 ALTER TABLE team_tasks
-    ADD CONSTRAINT fk_teatas_on_task FOREIGN KEY (tasks_id) REFERENCES task (id);
+    ADD CONSTRAINT fk_team_tasks_on_task FOREIGN KEY (task_id) REFERENCES task (id);
 
 ALTER TABLE team_tasks
-    ADD CONSTRAINT fk_teatas_on_team FOREIGN KEY (team_id) REFERENCES team (id);
+    ADD CONSTRAINT fk_team_tasks_on_team FOREIGN KEY (team_id) REFERENCES team (id);
 
-ALTER TABLE user_teams
-    ADD CONSTRAINT fk_usetea_on_team FOREIGN KEY (teams_id) REFERENCES team (id);
+ALTER TABLE user_entity_teams
+    ADD CONSTRAINT fk_user_entity_teams_on_team FOREIGN KEY (team_id) REFERENCES team (id);
 
-ALTER TABLE user_teams
-    ADD CONSTRAINT fk_usetea_on_user FOREIGN KEY (user_id) REFERENCES "user" (id);
+ALTER TABLE user_entity_teams
+    ADD CONSTRAINT fk_user_entity_teams_on_user_entity FOREIGN KEY (user_entity_id) REFERENCES user_entity (id);

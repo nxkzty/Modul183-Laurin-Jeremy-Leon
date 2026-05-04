@@ -26,7 +26,8 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+/src/main/frontend/generated/
+/src/main/frontend/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -43,3 +44,4 @@ out/
 ### DotEnv ###
 local.env
 .env
+

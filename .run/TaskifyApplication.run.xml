@@ -8,6 +8,7 @@
     <selectedOptions>
       <option name="environmentVariables" />
     </selectedOptions>
+    <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="ch.taskify.TaskifyApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
