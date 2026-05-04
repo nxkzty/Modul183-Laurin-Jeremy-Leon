@@ -34,13 +34,13 @@ class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.with(VaadinSecurityConfigurer.vaadin()) { vaadin ->
             vaadin.loginView(LoginView::class.java)
-            vaadin.defaultSuccessUrl("/myTaskify")
-            vaadin.anyRequest {
-                it.permitAll()
-            }
+//            vaadin.defaultSuccessUrl("/myTaskify")
+//            vaadin.anyRequest {
+//                it.permitAll()
+//            }
         }
             .logout { logout ->
-                logout.logoutSuccessUrl("/login?logout")
+                logout.logoutSuccessUrl("/")
                 logout.invalidateHttpSession(true)
 
             }

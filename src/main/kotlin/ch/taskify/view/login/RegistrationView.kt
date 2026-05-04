@@ -38,7 +38,7 @@ class RegistrationView(
 
     private val name = TextField("Name")
     private val password = PasswordField("Passwort")
-    private val confirmPassword = PasswordField("Passwort bestätigen")
+    private val confirmPassword = PasswordField("Passwort verifizieren")
     private val registerButton = Button("Registrieren")
 
     init {
@@ -86,7 +86,7 @@ class RegistrationView(
     }
 
     private fun createTitle(): H2 {
-        return H2("Register").apply {
+        return H2("Registrieren").apply {
             addClassName("register-title")
         }
     }

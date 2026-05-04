@@ -8,10 +8,11 @@ import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import com.vaadin.flow.spring.security.AuthenticationContext
 
 @Route("login", autoLayout = false)
 @AnonymousAllowed
-class LoginView : VerticalLayout(), BeforeEnterObserver {
+class LoginView(private val authenticationContext: AuthenticationContext) : VerticalLayout(), BeforeEnterObserver {
 
     private val login = LoginForm()
 
@@ -26,6 +27,12 @@ class LoginView : VerticalLayout(), BeforeEnterObserver {
     }
 
     override fun beforeEnter(event: BeforeEnterEvent) {
+        if (authenticationContext.isAuthenticated) {
+            event.forwardTo("myTaskify")
+            return
+        }
+
+
         if (event.location.queryParameters.parameters.containsKey("error")) {
             login.isError = true
             login.setI18n(LoginI18n.createDefault().apply {

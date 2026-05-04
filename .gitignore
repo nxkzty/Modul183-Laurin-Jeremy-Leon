@@ -45,3 +45,4 @@ local.env
 .env
 /src/main/frontend/generated/
 /src/main/frontend/
+/src/main/frontend/
