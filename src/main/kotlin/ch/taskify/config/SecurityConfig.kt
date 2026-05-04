@@ -1,7 +1,6 @@
 package ch.taskify.config
 
-import ch.taskify.repository.UserRepository
-import ch.taskify.service.UserDetailsServiceImpl
+import ch.taskify.service.user.UserDetailsServiceImpl
 import ch.taskify.view.login.LoginView
 import com.vaadin.flow.spring.security.VaadinSecurityConfigurer
 import org.springframework.context.annotation.Bean
@@ -29,7 +28,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @EnableWebSecurity
 @Configuration
-class SecurityConfig(private val userJpa: UserRepository) {
+class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -45,7 +44,7 @@ class SecurityConfig(private val userJpa: UserRepository) {
                 logout.invalidateHttpSession(true)
 
             }
-            .userDetailsService(UserDetailsServiceImpl(userJpa))
+            .userDetailsService(userDetailsService)
 
         return http.build()
     }

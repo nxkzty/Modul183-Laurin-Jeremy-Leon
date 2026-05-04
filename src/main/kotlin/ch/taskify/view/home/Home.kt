@@ -8,7 +8,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.security.PermitAll
 
-@Route("home")
+@Route("")
 @AnonymousAllowed
 class Home : VerticalLayout() {
     @PostConstruct

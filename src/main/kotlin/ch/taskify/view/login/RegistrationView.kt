@@ -1,13 +1,14 @@
 package ch.taskify.view.login
 
-import ch.taskify.view.home.Home
+import ch.taskify.dto.UserDTO
+import ch.taskify.entity.user.Role
+import ch.taskify.service.user.UserService
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.orderedlayout.FlexComponent
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
@@ -30,13 +31,15 @@ import com.vaadin.flow.server.auth.AnonymousAllowed
  */
 @Route("register", autoLayout = false)
 @AnonymousAllowed
-class RegistrationView : VerticalLayout() {
+class RegistrationView(
+    private val userService: UserService
+) : VerticalLayout() {
 
 
-    private val email = TextField("Username")
-    private val password = PasswordField("Password")
-    private val confirmPassword = PasswordField("Confirm Password")
-    private val registerButton = Button("Register")
+    private val name = TextField("Name")
+    private val password = PasswordField("Passwort")
+    private val confirmPassword = PasswordField("Passwort bestätigen")
+    private val registerButton = Button("Registrieren")
 
     init {
         configureLayout()
@@ -50,21 +53,26 @@ class RegistrationView : VerticalLayout() {
     }
 
     private fun buildForm() {
-        email.applyFullWidth()
+        name.applyFullWidth()
         password.applyFullWidth()
         confirmPassword.applyFullWidth()
+
 
         registerButton.apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             width = "100%"
             addClickListener {
-                println("register")
+                val userDTO = UserDTO(
+                    name.value.trim(),
+                    password.value.trim(),
+                )
+                handleSignUp(userDTO)
             }
         }
 
         val form = VerticalLayout(
             createTitle(),
-            email,
+            name,
             password,
             confirmPassword,
             registerButton
@@ -85,6 +93,11 @@ class RegistrationView : VerticalLayout() {
 
     private fun HasSize.applyFullWidth() {
         width = "100%"
+    }
+
+    private fun handleSignUp(signUp: UserDTO) {
+        userService.createUser(signUp.name, signUp.passwordHash, Role.USER)
+        UI.getCurrent().navigate(LoginView::class.java)
     }
 
 }
