@@ -6,20 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
-/*
- * UserDetailService.java
- *
- * Creator:
- * 04.05.2026 08:17 laurin.ebnoether
- *
- * Maintainer:
- * 04.05.2026 08:17 laurin.ebnoether
- *
- * Last Modification:
- * $Id:$
- *
- * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
- */
 @Service
 class UserDetailsServiceImpl(
     private val userRepository: UserRepository

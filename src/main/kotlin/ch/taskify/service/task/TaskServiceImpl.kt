@@ -1,21 +1,5 @@
 package ch.taskify.service.task
 
-/*
- * TaskServiceImpl.java  
- *
- * Creator:
- * 04.05.2026 16:40 laurin.ebnoether
- *
- * Maintainer:
- * 04.05.2026 16:40 laurin.ebnoether
- *
- * Last Modification:
- * $Id:$
- *
- * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
- */
-
-
 import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
 import org.springframework.stereotype.Service

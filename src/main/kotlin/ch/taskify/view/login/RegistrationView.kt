@@ -15,20 +15,6 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 
-/*
- * RegistrationView.java  
- *
- * Creator:
- * 04.05.2026 13:01 laurin.ebnoether
- *
- * Maintainer:
- * 04.05.2026 13:01 laurin.ebnoether
- *
- * Last Modification:
- * $Id:$
- *
- * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
- */
 @Route("register", autoLayout = false)
 @AnonymousAllowed
 class RegistrationView(
