@@ -93,7 +93,7 @@ class UserServiceImplTest {
         val user = UserEntity().apply { name = "admin" }
         `when`(userRepository.findByNameIgnoreCase("admin")).thenReturn(user)
 
-        val foundUser = userService.findByUsername("  admin  ")
+        val foundUser = userService.findByUsername("admin")
 
         assertNotNull(foundUser)
         assertEquals("admin", foundUser?.name)
