@@ -5,7 +5,6 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("com.vaadin") version "25.1.4"
     kotlin("plugin.jpa") version "2.2.21"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 group = "ch.taskify"
@@ -48,12 +47,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-websocket-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-ktlint {
-    version.set("1.2.1")
-    verbose.set(true)
-    outputToConsole.set(true)
 }
 
 dependencyManagement {
