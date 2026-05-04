@@ -1,9 +1,12 @@
 package ch.taskify.service
 
 import ch.taskify.repository.UserRepository
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.stereotype.Service
 
 /*
  * UserDetailService.java  

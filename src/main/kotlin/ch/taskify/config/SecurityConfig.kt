@@ -35,7 +35,7 @@ class SecurityConfig(private val userJpa: UserRepository) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.with(VaadinSecurityConfigurer.vaadin()) { vaadin ->
             vaadin.loginView(LoginView::class.java)
-            vaadin.defaultSuccessUrl("/")
+            vaadin.defaultSuccessUrl("/myTaskify")
             vaadin.anyRequest {
                 it.permitAll()
             }
