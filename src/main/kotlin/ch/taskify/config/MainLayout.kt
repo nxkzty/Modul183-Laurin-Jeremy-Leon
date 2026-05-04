@@ -16,7 +16,6 @@ import com.vaadin.flow.router.Layout
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import com.vaadin.flow.spring.security.AuthenticationContext
 import jakarta.annotation.PostConstruct
-import jakarta.annotation.security.PermitAll
 
 @Layout
 @AnonymousAllowed
@@ -32,7 +31,6 @@ class MainLayout(
     @PostConstruct
     fun init() {
         createNavbar()
-        addToDrawer(Button("Drawer"))
     }
 
     private fun createNavbar() {
