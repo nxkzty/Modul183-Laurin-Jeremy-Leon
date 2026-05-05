@@ -4,6 +4,7 @@ package ch.taskify.config
 import ch.taskify.ui.MyTaskify
 import ch.taskify.utils.avatar.AvatarBuilder
 import ch.taskify.view.about.About
+import ch.taskify.view.home.Home
 import ch.taskify.view.settings.Settings
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.applayout.AppLayout
@@ -145,7 +146,7 @@ class MainLayout(
 
     private fun createTitle(): RouterLink {
 
-        val link = RouterLink("", MyTaskify::class.java)
+        val link = RouterLink("", Home::class.java)
 
         val text = Span("Taskify")
         val dot = Span(".").apply {

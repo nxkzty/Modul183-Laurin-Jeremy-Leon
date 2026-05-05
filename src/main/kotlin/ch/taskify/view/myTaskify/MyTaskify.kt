@@ -3,7 +3,7 @@ package ch.taskify.ui
 import ch.taskify.dto.TaskDTO
 import ch.taskify.service.task.TaskService
 import ch.taskify.service.user.UserService
-import ch.taskify.utils.notify.Notify
+import ch.taskify.utils.CurrentUser
 import ch.taskify.view.myTaskify.CreateTaskDialog
 import ch.taskify.view.myTaskify.TasksGrid
 import com.vaadin.flow.component.button.Button
@@ -20,7 +20,6 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.security.PermitAll
-import org.springframework.security.core.context.SecurityContextHolder
 
 @Route("myTaskify")
 @PageTitle("MyTaskify")
@@ -31,6 +30,7 @@ class MyTaskify(
 ) : VerticalLayout() {
 
     private lateinit var grid: Grid<TaskDTO>
+
 
     @PostConstruct
     fun init() {
@@ -61,7 +61,7 @@ class MyTaskify(
                     taskService,
                     userService.findAll(),
                     onSave = { refreshGrid() },
-                    currentUsername = SecurityContextHolder.getContext().authentication?.name ?: "Unknown"
+                    currentUsername = CurrentUser.name
                 )
                 createTaskDialog.open()
             }
@@ -88,16 +88,9 @@ class MyTaskify(
         add(header)
     }
 
+
     private fun buildContent() {
-
-        grid = TasksGrid(
-            taskService = taskService,
-            onRefresh = { refreshGrid() },
-            onEdit = { task -> (
-                    Notify.warning("Wurde noch nicht implementiert")
-                    ) }
-        )
-
+        grid = TasksGrid(taskService, userService.findAll(), CurrentUser.name, onRefresh = { refreshGrid() })
         refreshGrid()
 
         if (taskService.getAll().isEmpty()) {

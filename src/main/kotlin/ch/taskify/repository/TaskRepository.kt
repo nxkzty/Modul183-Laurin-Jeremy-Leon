@@ -20,6 +20,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface TaskRepository : JpaRepository<Task, UUID> {
-    fun findByAssignee_NameIgnoreCase(username: String): List<Task>
-
+    fun findByAssignee_Id(userId: UUID): List<Task>
 }
