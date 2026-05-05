@@ -2,6 +2,7 @@ package ch.taskify.service.task
 
 import ch.taskify.dto.TaskDTO
 import ch.taskify.entity.task.Task
+import ch.taskify.entity.user.UserEntity
 import ch.taskify.repository.TaskRepository
 import ch.taskify.repository.UserRepository
 import jakarta.persistence.EntityNotFoundException
@@ -54,11 +55,9 @@ class TaskServiceImpl(
     }
 
     override fun getAllFromCurrentUser(): List<TaskDTO> {
-        val currentUser = SecurityContextHolder.getContext().authentication?.name
-        if (currentUser == null) {
-            return emptyList()
-        }
-        return taskRepository.findByAssignee_NameIgnoreCase(currentUser)
+        val principal = SecurityContextHolder.getContext().authentication?.principal as? UserEntity
+        val currentUserId = principal?.id ?: return emptyList()
+        return taskRepository.findByAssignee_Id(currentUserId)
             .map { task -> task.toDto() }
     }
 

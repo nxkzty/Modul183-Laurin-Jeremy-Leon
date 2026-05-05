@@ -1,9 +1,10 @@
 package ch.taskify.utils.validation
 
+import ch.taskify.dto.UserDTO
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 
-class UserValidator {
+class UserValidator() {
 
     fun validate(
         errorMessage: RegisterError,
@@ -48,5 +49,4 @@ class UserValidator {
 
         return valid
     }
-
 }

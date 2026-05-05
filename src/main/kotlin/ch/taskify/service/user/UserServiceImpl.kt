@@ -66,6 +66,7 @@ class UserServiceImpl(
                 this.role = role
             }
         )
+
         return UserDTO(saved.id, saved.name, saved.passwordHash, saved.role)
     }
 

@@ -23,3 +23,5 @@ data class UserDTO(
     val passwordHash: String,
     val role: Role
 )
+
+
