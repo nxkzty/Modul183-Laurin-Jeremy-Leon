@@ -143,7 +143,7 @@ class MyTaskify(
                     addClickListener {
                         ConfirmDialog(
                             "Löschen?",
-                            "Willst du diesen Task wirklich löschen?",
+                            "Willst du diese Aufgabe wirklich löschen?",
                             "Löschen",
                             {
                                 taskService.delete(task.id!!)
