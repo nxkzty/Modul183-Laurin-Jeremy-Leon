@@ -36,7 +36,12 @@ object Notify {
         notification.position = Notification.Position.BOTTOM_END
 
         val icon = Icon(type.icon).apply {
-            style.set("color", "white")
+            style.set("color", when (type) {
+                Type.SUCCESS -> "var(--lumo-success-color)"
+                Type.ERROR -> "var(--lumo-error-color)"
+                Type.WARNING -> "var(--lumo-warning-color)"
+                Type.INFO -> "var(--lumo-primary-color)"
+            })
         }
 
         val text = Span(message)

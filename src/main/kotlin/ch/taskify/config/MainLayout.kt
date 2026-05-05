@@ -6,6 +6,7 @@ import com.vaadin.flow.component.applayout.AppLayout
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.router.Layout
@@ -71,45 +72,28 @@ class MainLayout(
 
     private fun createTitle(): Div =
         Div().apply {
-            text = "Taskify"
-            style.set("font-size", "22px")
-            style.set("font-weight", "600")
+            val text = Span("Taskify").apply {
+                style.set("font-size", "28px")
+                style.set("font-weight", "600")
+                style.set("letter-spacing", "-0.5px")
+            }
+
+            val accent = Span(".").apply {
+                style.set("color", "var(--lumo-primary-color)")
+                style.set("font-size", "28px")
+                style.set("font-weight", "600")
+            }
+
+            add(text, accent)
+
+            style.set("display", "flex")
+            style.set("align-items", "center")
+            style.set("gap", "2px")
+
+            style.set("cursor", "pointer")
+
+            addClickListener {
+                ui.ifPresent { it.navigate("myTaskify") }
+            }
         }
-//
-//    private fun createAvatar(): Avatar {
-//        val username = authenticationContext.principalName.orElse("User") ?: "User"
-//        return Avatar(username.uppercase()).apply {
-//            style.set("cursor", "pointer")
-//        }
-//    }
-//
-//    private fun createAvatarMenu(avatar: Avatar) {
-//        ContextMenu(avatar).apply {
-//            isOpenOnClick = true
-//
-//            addItem(createMenuItem(VaadinIcon.COG, "Settings")) {
-//                ui.ifPresent { it.navigate("settings") }
-//
-//            }
-//
-//            addItem(createMenuItem(VaadinIcon.SIGN_OUT, "Logout")) {
-//                authenticationContext.logout()
-//                ui.ifPresent { it.navigate("/") }
-//            }
-//        }
-//    }
-//
-//    private fun createMenuItem(iconType: VaadinIcon, text: String): HorizontalLayout {
-//        val icon = Icon(iconType).apply {
-//            setSize(ICON_SIZE)
-//        }
-//
-//        val label = Span(text).apply {
-//            style.set("font-size", FONT_SIZE)
-//        }
-//
-//        return HorizontalLayout(icon, label).apply {
-//            defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
-//        }
-//    }
 }

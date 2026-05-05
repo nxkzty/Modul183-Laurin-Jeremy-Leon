@@ -3,6 +3,7 @@ package ch.taskify.ui
 import ch.taskify.dto.TaskDTO
 import ch.taskify.service.task.TaskService
 import ch.taskify.service.user.UserService
+import ch.taskify.utils.notify.Notify
 import ch.taskify.view.myTaskify.CreateTaskDialog
 import ch.taskify.view.myTaskify.TasksGrid
 import com.vaadin.flow.component.button.Button
@@ -92,7 +93,9 @@ class MyTaskify(
         grid = TasksGrid(
             taskService = taskService,
             onRefresh = { refreshGrid() },
-            onEdit = { task -> (task) }
+            onEdit = { task -> (
+                    Notify.warning("Wurde noch nicht implementiert")
+                    ) }
         )
 
         refreshGrid()

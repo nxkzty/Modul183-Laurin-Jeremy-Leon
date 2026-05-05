@@ -41,13 +41,9 @@ class CreateTaskDialog(
         assignee.setItems(users)
         assignee.setItemLabelGenerator { it.name }
 
-//        issuer.setItems(users)
-//        issuer.setItemLabelGenerator { it.name }
-
         title.isRequiredIndicatorVisible = true
         state.isRequiredIndicatorVisible = true
         assignee.isRequiredIndicatorVisible = true
-//        issuer.isRequiredIndicatorVisible = true
 
         binder.forField(title)
             .asRequired("Titel ist erforderlich")
@@ -71,13 +67,6 @@ class CreateTaskDialog(
                 { username: String? -> users.find { it.name == username } }
             )
             .bind(TaskDTO::assigneeUsername, TaskDTO::assigneeUsername::set)
-
-//        binder.forField(issuer)
-//            .withConverter(
-//                { user: UserDTO? -> user?.name },
-//                { username: String? -> users.find { it.name == username } }
-//            )
-//            .bind(TaskDTO::issuerUsername, TaskDTO::issuerUsername::set)
 
         binder.readBean(task)
 

@@ -58,7 +58,7 @@ class TasksGrid(
             .setSortable(true)
 
         addComponentColumn { task ->
-            Span(task.state.name).apply {
+            Span(task.state.toString().uppercase()).apply {
                 style.set("background-color", getStateColor(task.state))
                 style.set("color", "white")
                 style.set("padding", "4px 10px")
@@ -69,8 +69,8 @@ class TasksGrid(
             .setSortable(true)
 
         addComponentColumn { task ->
-            val text = task.risk?.name ?: "-"
-            Span(text).apply {
+            val text = task.risk?.toString() ?: "-"
+            Span(text.uppercase()).apply {
                 style.set("color", getRiskColor(task.risk))
                 style.set("font-weight", "600")
             }
@@ -78,14 +78,15 @@ class TasksGrid(
             .setSortable(true)
 
 
-        addColumn { it.assigneeUsername ?: "-" }
-            .setHeader("Verantwortlich")
+        addComponentColumn { task ->
+            userCell(task.assigneeUsername)
+        }.setHeader("Verantwortlich")
             .setSortable(true)
 
-        addColumn { it.issuerUsername ?: "-" }
-            .setHeader("Erstellt von")
+        addComponentColumn { task ->
+            userCell(task.issuerUsername)
+        }.setHeader("Erstellt von")
             .setSortable(true)
-
 
         addComponentColumn { task ->
             val edit = Button(Icon(VaadinIcon.EDIT)).apply {
@@ -129,7 +130,6 @@ class TasksGrid(
         val name = username ?: "-"
 
         val avatar = Avatar(name).apply {
-            // Initialen automatisch
             this.name = name
         }
 
