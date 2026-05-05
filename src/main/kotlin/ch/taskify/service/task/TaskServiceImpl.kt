@@ -3,20 +3,23 @@ package ch.taskify.service.task
 import ch.taskify.dto.TaskDTO
 import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
+import ch.taskify.repository.UserRepository
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
 class TaskServiceImpl(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val userRepository: UserRepository,
+
 ) : TaskService {
 
     override fun create(task: TaskDTO): TaskDTO {
-        val entity = task.toEntity()
-        return taskRepository.save(entity).toDto()
+        return taskRepository.save(task.toEntity()).toDto()
     }
 
     @Transactional(readOnly = true)
@@ -50,6 +53,15 @@ class TaskServiceImpl(
         taskRepository.deleteById(id)
     }
 
+    override fun getAllFromCurrentUser(): List<TaskDTO> {
+        val currentUser = SecurityContextHolder.getContext().authentication?.name
+        if (currentUser == null) {
+            return emptyList()
+        }
+        return taskRepository.findByAssignee_NameIgnoreCase(currentUser)
+            .map { task -> task.toDto() }
+    }
+
     private fun Task.toDto(): TaskDTO =
         TaskDTO(
             id = this.id!!,
@@ -67,5 +79,12 @@ class TaskServiceImpl(
             description = this@toEntity.description
             state = this@toEntity.state
             risk = this@toEntity.risk
+            assignee = this@toEntity.assigneeUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
+
+            issuer = this@toEntity.issuerUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
         }
 }

@@ -1,26 +1,26 @@
 package ch.taskify.ui
 
 import ch.taskify.dto.TaskDTO
-import ch.taskify.entity.task.Risk
-import ch.taskify.entity.task.State
-import ch.taskify.entity.task.Task
 import ch.taskify.service.task.TaskService
 import ch.taskify.service.user.UserService
+import ch.taskify.utils.notify.Notify
 import ch.taskify.view.myTaskify.CreateTaskDialog
+import ch.taskify.view.myTaskify.TasksGrid
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog
 import com.vaadin.flow.component.grid.Grid
-import com.vaadin.flow.component.grid.GridVariant
 import com.vaadin.flow.component.html.H1
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.*
+import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.security.PermitAll
+import org.springframework.security.core.context.SecurityContextHolder
 
 @Route("myTaskify")
 @PageTitle("MyTaskify")
@@ -60,7 +60,8 @@ class MyTaskify(
                 val createTaskDialog = CreateTaskDialog(
                     taskService,
                     userService.findAll(),
-                    onSave = { refreshGrid() }
+                    onSave = { refreshGrid() },
+                    currentUsername = SecurityContextHolder.getContext().authentication?.name ?: "Unknown"
                 )
                 createTaskDialog.open()
             }
@@ -89,78 +90,13 @@ class MyTaskify(
 
     private fun buildContent() {
 
-        grid = Grid(TaskDTO::class.java, false).apply {
-            width = "100%"
-            addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
-
-            addColumn(TaskDTO::title)
-                .setHeader("Titel")
-                .setAutoWidth(true)
-                .setFlexGrow(1)
-
-            addColumn { task ->
-                if (task.description.length > 50)
-                    task.description.take(50) + "..."
-                else
-                    task.description
-            }.setHeader("Beschreibung")
-                .setFlexGrow(2)
-
-            addComponentColumn { task ->
-                Span(task.state.name).apply {
-                    style.set("background-color", getStateColor(task.state))
-                    style.set("color", "white")
-                    style.set("padding", "4px 10px")
-                    style.set("border-radius", "999px")
-                    style.set("font-size", "12px")
-                }
-            }.setHeader("Status")
-
-            addComponentColumn { task ->
-                val text = task.risk?.name ?: "-"
-                Span(text).apply {
-                    style.set("color", getRiskColor(task.risk))
-                    style.set("font-weight", "600")
-                }
-            }.setHeader("Risiko")
-
-            addColumn { it.assigneeUsername?: "-" }
-                .setHeader("Zuständig")
-
-            addColumn { it.issuerUsername?: "-" }
-                .setHeader("Erstellt von")
-
-            addComponentColumn { task ->
-                val edit = Button(Icon(VaadinIcon.EDIT)).apply {
-                    addThemeVariants(ButtonVariant.LUMO_TERTIARY)
-                    addClickListener {
-                        // TODO Edit Dialog
-                    }
-                }
-
-                val delete = Button(Icon(VaadinIcon.TRASH)).apply {
-                    addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY)
-                    addClickListener {
-                        ConfirmDialog(
-                            "Löschen?",
-                            "Willst du diesen Task wirklich löschen?",
-                            "Löschen",
-                            {
-                                taskService.delete(task.id!!)
-                                refreshGrid()
-                            },
-                            "Abbrechen",
-                            {}
-                        ).open()
-                    }
-                }
-
-                HorizontalLayout(edit, delete).apply {
-                    isPadding = false
-                    isSpacing = true
-                }
-            }.setHeader("")
-        }
+        grid = TasksGrid(
+            taskService = taskService,
+            onRefresh = { refreshGrid() },
+            onEdit = { task -> (
+                    Notify.warning("Wurde noch nicht implementiert")
+                    ) }
+        )
 
         refreshGrid()
 
@@ -172,25 +108,6 @@ class MyTaskify(
     }
 
     private fun refreshGrid() {
-        grid.setItems(taskService.getAll())
-    }
-
-    private fun getStateColor(state: State): String {
-        return when (state) {
-            State.OPEN -> "#6b7280"
-            State.TODO -> "#3b82f6"
-            State.IN_PROGRESS -> "#f59e0b"
-            State.IN_REVIEW -> "#8b5cf6"
-            State.COMPLETE -> "#10b981"
-        }
-    }
-
-    private fun getRiskColor(risk: Risk?): String {
-        return when (risk) {
-            Risk.LOW -> "#10b981"
-            Risk.MEDIUM -> "#f59e0b"
-            Risk.HIGH -> "#ef4444"
-            null -> "#9ca3af"
-        }
+        grid.setItems(taskService.getAllFromCurrentUser())
     }
 }

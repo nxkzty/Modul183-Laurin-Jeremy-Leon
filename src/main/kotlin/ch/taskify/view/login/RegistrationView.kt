@@ -14,6 +14,7 @@ import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
+import java.util.UUID
 
 /*
  * RegistrationView.java  
@@ -63,6 +64,7 @@ class RegistrationView(
             width = "100%"
             addClickListener {
                 val userDTO = UserDTO(
+                    UUID.randomUUID(),
                     name.value.trim(),
                     password.value.trim(),
                     Role.USER

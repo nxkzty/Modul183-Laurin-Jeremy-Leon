@@ -18,16 +18,16 @@ class UserServiceImpl(
 
     @Transactional(readOnly = true)
     override fun findAll(): List<UserDTO> = userRepository.findAll().map { userDTO ->
-        UserDTO(userDTO.name, userDTO.passwordHash, userDTO.role)
+        UserDTO(userDTO.id, userDTO.name, userDTO.passwordHash, userDTO.role)
     }
 
     @Transactional(readOnly = true)
     override fun findById(id: UUID): UserDTO? {
         val findById = userRepository.findById(id)
         return if (findById.isPresent) {
-            UserDTO(findById.get().name, findById.get().passwordHash, findById.get().role)
+            UserDTO(id, findById.get().name, findById.get().passwordHash, findById.get().role)
         } else {
-            return null
+            null
         }
     }
 
@@ -35,9 +35,14 @@ class UserServiceImpl(
     override fun findByUsername(username: String): UserDTO? {
         val findByNameIgnoreCase = userRepository.findByNameIgnoreCase(username.trim())
         return if (findByNameIgnoreCase != null) {
-            UserDTO(findByNameIgnoreCase.name, findByNameIgnoreCase.passwordHash, findByNameIgnoreCase.role)
+            UserDTO(
+                findByNameIgnoreCase.id,
+                findByNameIgnoreCase.name,
+                findByNameIgnoreCase.passwordHash,
+                findByNameIgnoreCase.role
+            )
         }else {
-            return null
+            null
         }
     }
 
@@ -61,7 +66,7 @@ class UserServiceImpl(
                 this.role = role
             }
         )
-        return UserDTO(saved.name, saved.passwordHash, saved.role)
+        return UserDTO(saved.id, saved.name, saved.passwordHash, saved.role)
     }
 
     override fun updateUser(
@@ -92,7 +97,7 @@ class UserServiceImpl(
         }
 
         val saved = userRepository.save(user)
-        return UserDTO(saved.name, saved.passwordHash, saved.role)
+        return UserDTO(saved.id, saved.name, saved.passwordHash, saved.role)
     }
 
     override fun deleteUser(id: UUID) {
