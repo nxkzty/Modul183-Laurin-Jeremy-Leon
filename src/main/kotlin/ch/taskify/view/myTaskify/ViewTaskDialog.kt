@@ -4,7 +4,6 @@ import ch.taskify.dto.TaskDTO
 import ch.taskify.utils.dialog.TADialog
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.avatar.Avatar
-import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout

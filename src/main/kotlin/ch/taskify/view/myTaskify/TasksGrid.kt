@@ -2,8 +2,6 @@ package ch.taskify.view.myTaskify
 
 import ch.taskify.dto.TaskDTO
 import ch.taskify.dto.UserDTO
-import ch.taskify.entity.task.Risk
-import ch.taskify.entity.task.State
 import ch.taskify.service.task.TaskService
 import ch.taskify.utils.notify.Notify
 import com.vaadin.flow.component.avatar.Avatar

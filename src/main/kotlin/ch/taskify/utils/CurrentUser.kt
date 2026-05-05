@@ -1,6 +1,5 @@
 package ch.taskify.utils
 
-import ch.taskify.dto.UserDTO
 import ch.taskify.entity.user.UserEntity
 import org.springframework.security.core.context.SecurityContextHolder
 

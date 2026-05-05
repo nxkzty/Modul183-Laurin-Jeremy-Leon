@@ -1,6 +1,5 @@
 package ch.taskify.utils.validation
 
-import ch.taskify.dto.UserDTO
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
 
