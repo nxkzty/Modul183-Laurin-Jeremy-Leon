@@ -1,12 +1,13 @@
 package ch.taskify.service.user
 
+import ch.taskify.dto.UserDTO
 import ch.taskify.entity.user.Role
 import ch.taskify.entity.user.UserEntity
 import ch.taskify.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
@@ -16,20 +17,35 @@ class UserServiceImpl(
 ) : UserService {
 
     @Transactional(readOnly = true)
-    override fun findAll(): List<UserEntity> = userRepository.findAll()
+    override fun findAll(): List<UserDTO> = userRepository.findAll().map { userDTO ->
+        UserDTO(userDTO.name, userDTO.passwordHash, userDTO.role)
+    }
 
     @Transactional(readOnly = true)
-    override fun findById(id: UUID): UserEntity? = userRepository.findById(id).orElse(null)
+    override fun findById(id: UUID): UserDTO? {
+        val findById = userRepository.findById(id)
+        return if (findById.isPresent) {
+            UserDTO(findById.get().name, findById.get().passwordHash, findById.get().role)
+        } else {
+            return null
+        }
+    }
 
     @Transactional(readOnly = true)
-    override fun findByUsername(username: String): UserEntity? =
-        userRepository.findByNameIgnoreCase(username.trim())
+    override fun findByUsername(username: String): UserDTO? {
+        val findByNameIgnoreCase = userRepository.findByNameIgnoreCase(username.trim())
+        return if (findByNameIgnoreCase != null) {
+            UserDTO(findByNameIgnoreCase.name, findByNameIgnoreCase.passwordHash, findByNameIgnoreCase.role)
+        }else {
+            return null
+        }
+    }
 
     override fun createUser(
         username: String,
         rawPassword: String,
         role: Role
-    ): UserEntity {
+    ): UserDTO {
         val normalizedUsername = username.trim()
         require(normalizedUsername.isNotEmpty()) { "Username must not be blank" }
         require(rawPassword.isNotBlank()) { "Password must not be blank" }
@@ -37,7 +53,7 @@ class UserServiceImpl(
             "User with username '$normalizedUsername' already exists"
         }
 
-        return userRepository.save(
+        val saved =  userRepository.save(
             UserEntity().apply {
                 name = normalizedUsername
                 passwordHash = passwordEncoder.encode(rawPassword)
@@ -45,6 +61,7 @@ class UserServiceImpl(
                 this.role = role
             }
         )
+        return UserDTO(saved.name, saved.passwordHash, saved.role)
     }
 
     override fun updateUser(
@@ -52,7 +69,7 @@ class UserServiceImpl(
         username: String?,
         rawPassword: String?,
         role: Role?
-    ): UserEntity {
+    ): UserDTO {
         val user = userRepository.findById(id)
             .orElseThrow { IllegalArgumentException("User with id '$id' does not exist") }
 
@@ -74,7 +91,8 @@ class UserServiceImpl(
             user.role = it
         }
 
-        return userRepository.save(user)
+        val saved = userRepository.save(user)
+        return UserDTO(saved.name, saved.passwordHash, saved.role)
     }
 
     override fun deleteUser(id: UUID) {

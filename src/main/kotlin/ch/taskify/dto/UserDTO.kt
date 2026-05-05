@@ -16,5 +16,8 @@ import ch.taskify.entity.user.Role
  *
  * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
  */
-data class UserDTO(val name: String,
-    val passwordHash: String)
+data class UserDTO(
+    val name: String,
+    val passwordHash: String,
+    val role: Role
+)

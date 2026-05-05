@@ -65,6 +65,7 @@ class RegistrationView(
                 val userDTO = UserDTO(
                     name.value.trim(),
                     password.value.trim(),
+                    Role.USER
                 )
                 handleSignUp(userDTO)
             }
@@ -96,7 +97,7 @@ class RegistrationView(
     }
 
     private fun handleSignUp(signUp: UserDTO) {
-        userService.createUser(signUp.name, signUp.passwordHash, Role.USER)
+        userService.createUser(signUp.name, signUp.passwordHash, signUp.role)
         UI.getCurrent().navigate(LoginView::class.java)
     }
 
