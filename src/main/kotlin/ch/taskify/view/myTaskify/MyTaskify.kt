@@ -94,7 +94,9 @@ class MyTaskify(
             taskService = taskService,
             onRefresh = { refreshGrid() },
             onEdit = { task -> (
-                    Notify.warning("Wurde noch nicht implementiert")
+                    Notify.warning("Wurde noch nicht implementiert!")
+//                    CreateTaskDialog(taskService, users, currentUsername, onSave = { refresh() }, existingTask = task).open()
+
                     ) }
         )
 

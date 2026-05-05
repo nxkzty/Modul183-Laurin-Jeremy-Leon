@@ -124,8 +124,7 @@ class TasksGrid(
         }.setHeader("")
 
         addItemDoubleClickListener { event ->
-            Notify.warning("Wurde noch nicht Implementiert!")
-            TODO("ShowTask Dialog, welche gleich wie der Create ist, aber ReadOnly")
+            ViewTaskDialog(event.item).open()
         }
 
     }
