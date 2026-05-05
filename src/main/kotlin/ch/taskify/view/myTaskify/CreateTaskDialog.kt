@@ -5,14 +5,20 @@ import ch.taskify.dto.UserDTO
 import ch.taskify.entity.task.Risk
 import ch.taskify.entity.task.State
 import ch.taskify.service.task.TaskService
+import ch.taskify.utils.avatar.AvatarBuilder
 import ch.taskify.utils.dialog.TADialog
 import ch.taskify.utils.notify.Notify
+import com.vaadin.flow.component.avatar.Avatar
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.Binder
+import com.vaadin.flow.data.renderer.ComponentRenderer
 
 class CreateTaskDialog(
     private val taskService: TaskService,
@@ -31,7 +37,7 @@ class CreateTaskDialog(
     private val description = TextArea("Beschreibung")
     private val state = ComboBox<State>("Status")
     private val risk = ComboBox<Risk>("Risiko")
-    private val assignee = ComboBox<UserDTO>("Zuständig")
+    private val assignee = ComboBox<UserDTO>("Verantwortlicher")
 
     init {
 
@@ -40,6 +46,7 @@ class CreateTaskDialog(
 
         assignee.setItems(users)
         assignee.setItemLabelGenerator { it.name }
+        assignee.setRenderer(assigneeRenderer())
 
         title.isRequiredIndicatorVisible = true
         state.isRequiredIndicatorVisible = true
@@ -62,6 +69,7 @@ class CreateTaskDialog(
             .bind(TaskDTO::risk, TaskDTO::risk::set)
 
         binder.forField(assignee)
+            .asRequired("Verantwortlicher ist erforderlich")
             .withConverter(
                 { user: UserDTO? -> user?.name },
                 { username: String? -> users.find { it.name == username } }
@@ -86,9 +94,28 @@ class CreateTaskDialog(
         addContent(form)
     }
 
+    private fun assigneeRenderer(): ComponentRenderer<HorizontalLayout?, UserDTO?> = ComponentRenderer { user: UserDTO ->
+        val avatar = Avatar(user.name).apply {
+            setWidth("24px")
+            setHeight("24px")
+        }
+
+        val name = Span(user.name).apply {
+            style.set("font-size", "16px")
+        }
+
+        HorizontalLayout(avatar, name).apply {
+            alignItems = FlexComponent.Alignment.CENTER
+            style.set("gap", "8px")
+            isSpacing = true
+            isPadding = false
+            isMargin = false
+        }
+
+    }
+
     private fun save() {
         task.issuerUsername = currentUsername
-        task.assigneeUsername = assignee.value.name
         if (binder.writeBeanIfValid(task)) {
             taskService.create(task)
             Notify.success("Task erstellt!")
