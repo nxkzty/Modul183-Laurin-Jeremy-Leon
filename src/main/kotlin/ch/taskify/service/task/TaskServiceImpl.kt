@@ -5,15 +5,17 @@ import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
 import ch.taskify.repository.UserRepository
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
 class TaskServiceImpl(
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
+
 ) : TaskService {
 
     override fun create(task: TaskDTO): TaskDTO {
@@ -49,6 +51,15 @@ class TaskServiceImpl(
             throw EntityNotFoundException("Task with id $id not found")
         }
         taskRepository.deleteById(id)
+    }
+
+    override fun getAllFromCurrentUser(): List<TaskDTO> {
+        val currentUser = SecurityContextHolder.getContext().authentication?.name
+        if (currentUser == null) {
+            return emptyList()
+        }
+        return taskRepository.findByAssignee_NameIgnoreCase(currentUser)
+            .map { task -> task.toDto() }
     }
 
     private fun Task.toDto(): TaskDTO =

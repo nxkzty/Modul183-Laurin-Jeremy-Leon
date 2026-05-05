@@ -29,4 +29,6 @@ interface TaskService {
     fun update(id: UUID, task: TaskDTO): TaskDTO
 
     fun delete(id: UUID)
+
+    fun getAllFromCurrentUser(): List<TaskDTO>
 }

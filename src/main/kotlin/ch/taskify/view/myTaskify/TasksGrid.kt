@@ -35,8 +35,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 class TasksGrid(
     private val taskService: TaskService,
     private val onRefresh: () -> Unit,
-    private val onEdit: (TaskDTO) -> Unit
+    private val onEdit: (TaskDTO) -> Unit,
 ) : Grid<TaskDTO>(TaskDTO::class.java, false) {
+
 
     init {
         width = "100%"
@@ -120,10 +121,7 @@ class TasksGrid(
                 isSpacing = true
             }
         }.setHeader("")
-    }
 
-    fun refreshGrid() {
-        setItems(taskService.getAll())
     }
 
     private fun userCell(username: String?): HorizontalLayout {

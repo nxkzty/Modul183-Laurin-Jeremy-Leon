@@ -108,6 +108,6 @@ class MyTaskify(
     }
 
     private fun refreshGrid() {
-        grid.setItems(taskService.getAll())
+        grid.setItems(taskService.getAllFromCurrentUser())
     }
 }
