@@ -66,6 +66,8 @@ class TasksGrid(
             val edit = Button(Icon(VaadinIcon.EDIT)).apply {
                 addThemeVariants(ButtonVariant.LUMO_TERTIARY)
                 addClickListener {
+                    //todo Laurin: asignee wird noch nicht richtig editiert
+                    Notify.warning("Verantwortlicher wird nicht richtig editiert!")
                     CreateTaskDialog(
                         taskService = taskService,
                         users = users,
