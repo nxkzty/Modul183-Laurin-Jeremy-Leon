@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import org.aspectj.weaver.ast.Not
 
 /*
  * TasksGrid.java  
@@ -121,6 +122,11 @@ class TasksGrid(
                 isSpacing = true
             }
         }.setHeader("")
+
+        addItemDoubleClickListener { event ->
+            Notify.warning("Wurde noch nicht Implementiert!")
+            TODO("ShowTask Dialog, welche gleich wie der Create ist, aber ReadOnly")
+        }
 
     }
 
