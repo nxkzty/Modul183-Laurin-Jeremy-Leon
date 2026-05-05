@@ -1,8 +1,10 @@
 package ch.taskify.view.settings
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import jakarta.annotation.PostConstruct
+import jakarta.annotation.security.PermitAll
 
 /*
  * Settings.java  
@@ -19,6 +21,8 @@ import jakarta.annotation.PostConstruct
  * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
  */
 @Route("settings")
+@PageTitle("MyTaskify")
+@PermitAll
 class Settings : VerticalLayout() {
 
     @PostConstruct
