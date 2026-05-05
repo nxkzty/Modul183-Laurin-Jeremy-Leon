@@ -27,7 +27,7 @@ class UserServiceImpl(
         return if (findById.isPresent) {
             UserDTO(findById.get().name, findById.get().passwordHash, findById.get().role)
         } else {
-            return null
+            null
         }
     }
 
