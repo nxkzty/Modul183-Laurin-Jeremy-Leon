@@ -3,6 +3,7 @@ package ch.taskify.service.task
 import ch.taskify.dto.TaskDTO
 import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
+import ch.taskify.repository.UserRepository
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,12 +12,12 @@ import java.util.UUID
 @Service
 @Transactional
 class TaskServiceImpl(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val userRepository: UserRepository,
 ) : TaskService {
 
     override fun create(task: TaskDTO): TaskDTO {
-        val entity = task.toEntity()
-        return taskRepository.save(entity).toDto()
+        return taskRepository.save(task.toEntity()).toDto()
     }
 
     @Transactional(readOnly = true)
@@ -67,5 +68,12 @@ class TaskServiceImpl(
             description = this@toEntity.description
             state = this@toEntity.state
             risk = this@toEntity.risk
+            assignee = this@toEntity.assigneeUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
+
+            issuer = this@toEntity.issuerUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
         }
 }

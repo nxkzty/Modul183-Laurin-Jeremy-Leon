@@ -37,7 +37,7 @@ class UserServiceImpl(
         return if (findByNameIgnoreCase != null) {
             UserDTO(findByNameIgnoreCase.name, findByNameIgnoreCase.passwordHash, findByNameIgnoreCase.role)
         }else {
-            return null
+            null
         }
     }
 
