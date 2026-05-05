@@ -1,8 +1,11 @@
-package ch.taskify.view.login
+package ch.taskify.view.registration
 
 import ch.taskify.dto.UserDTO
 import ch.taskify.entity.user.Role
 import ch.taskify.service.user.UserService
+import ch.taskify.utils.validation.RegisterError
+import ch.taskify.utils.validation.UserValidator
+import ch.taskify.view.login.LoginView
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
@@ -17,7 +20,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed
 import java.util.UUID
 
 /*
- * RegistrationView.java  
+ * RegistrationView.java
  *
  * Creator:
  * 04.05.2026 13:01 laurin.ebnoether
@@ -30,7 +33,7 @@ import java.util.UUID
  *
  * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
  */
-@Route("register", autoLayout = false)
+@Route("register")
 @AnonymousAllowed
 class RegistrationView(
     private val userService: UserService
@@ -41,6 +44,8 @@ class RegistrationView(
     private val password = PasswordField("Passwort")
     private val confirmPassword = PasswordField("Passwort verifizieren")
     private val registerButton = Button("Registrieren")
+    private var userValidator: UserValidator = UserValidator()
+    private val errorMessage = RegisterError()
 
     init {
         configureLayout()
@@ -63,18 +68,27 @@ class RegistrationView(
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             width = "100%"
             addClickListener {
-                val userDTO = UserDTO(
-                    UUID.randomUUID(),
-                    name.value.trim(),
-                    password.value.trim(),
-                    Role.USER
+                val isValid = userValidator.validate(
+                    errorMessage,
+                    name,
+                    password,
+                    confirmPassword
                 )
-                handleSignUp(userDTO)
+                if (isValid) {
+                    val userDTO = UserDTO(
+                        UUID.randomUUID(),
+                        name.value.trim(),
+                        password.value.trim(),
+                        Role.USER
+                    )
+                    handleSignUp(userDTO)
+                }
             }
         }
 
         val form = VerticalLayout(
             createTitle(),
+            errorMessage,
             name,
             password,
             confirmPassword,
