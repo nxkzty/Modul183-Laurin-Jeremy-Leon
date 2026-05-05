@@ -5,6 +5,7 @@ import ch.taskify.entity.task.Task
 import ch.taskify.entity.user.UserEntity
 import ch.taskify.repository.TaskRepository
 import ch.taskify.repository.UserRepository
+import ch.taskify.utils.CurrentUser
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -55,7 +56,7 @@ class TaskServiceImpl(
     }
 
     override fun getAllFromCurrentUser(): List<TaskDTO> {
-        val principal = SecurityContextHolder.getContext().authentication?.principal as? UserEntity
+        val principal = CurrentUser.principalAsUserEntity
         val currentUserId = principal?.id ?: return emptyList()
         return taskRepository.findByAssignee_Id(currentUserId)
             .map { task -> task.toDto() }
