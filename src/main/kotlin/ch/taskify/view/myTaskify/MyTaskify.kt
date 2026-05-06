@@ -44,7 +44,7 @@ class MyTaskify(
             style.set("margin", "0")
         }
 
-        val subtitle = Span("Deine aktuellen Tasks").apply {
+        val subtitle = Span("Deine Zugewiesenen Aufgaben").apply {
             style.set("color", "#6b7280")
             style.set("font-size", "14px")
         }
