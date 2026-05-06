@@ -54,7 +54,6 @@ object Notify {
 
         notification.add(layout)
 
-        // Styling je nach Typ
         notification.element.style.apply {
             set("background-color", type.bgColor)
             set("color", "white")
