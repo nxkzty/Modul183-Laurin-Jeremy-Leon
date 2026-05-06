@@ -88,18 +88,22 @@ class MainLayout(
 
             val nav = SideNav()
 
-            val dashboardItem = SideNavItem("Dashboard", "/myTaskify").apply {
+            val myTasks = createDrawerItem("Meine Aufgaben", "/myTaskify")
+            val boardItem = createDrawerItem("Board", "/myTaskify/board")
+            val team = createDrawerItem("Team", "/myTaskify/team")
 
-                // Zugriff auf das innere Element
-                element.style.set("border-radius", "10px")
-                element.style.set("overflow", "hidden")
-
-                element.style.set("margin", "4px 8px")
-            }
-
-            nav.addItem(dashboardItem)
+            nav.addItem(myTasks)
+            nav.addItem(boardItem)
+            nav.addItem(team)
             addToDrawer(nav)
         }
+    }
+
+    private fun createDrawerItem(label: String, path: String): SideNavItem = SideNavItem(label, path).apply {
+        element.style.set("border-radius", "10px")
+        element.style.set("overflow", "hidden")
+
+        element.style.set("margin", "4px 8px")
     }
 
     private fun addDrawerToggle() {
