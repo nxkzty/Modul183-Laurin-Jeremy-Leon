@@ -15,8 +15,11 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
 
     private var isExpanded = true
     private val contentWrapper = VerticalLayout()
-    private val toggleIcon = Icon(VaadinIcon.ANGLE_LEFT)
+
     private val titleIcon = Icon(VaadinIcon.BAR_CHART)
+    private val toggleIcon = Icon(VaadinIcon.ANGLE_LEFT)
+
+    private lateinit var headerLabel: Span
 
     init {
         width = "320px"
@@ -39,7 +42,8 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
     }
 
     private fun buildToggleHeader(): HorizontalLayout {
-        val label = Span("Statistiken").apply {
+
+        headerLabel = Span("Statistiken").apply {
             style
                 .set("font-size", "11px")
                 .set("font-weight", "700")
@@ -65,7 +69,7 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
                 .set("cursor", "pointer")
         }
 
-        return HorizontalLayout(titleIcon, label, toggleIcon).apply {
+        return HorizontalLayout(titleIcon, headerLabel, toggleIcon).apply {
             setWidthFull()
             isPadding = false
             isSpacing = false
@@ -120,22 +124,29 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
             width = "320px"
             minWidth = "320px"
             maxWidth = "320px"
+
             contentWrapper.style
                 .set("max-height", "calc(100vh - 120px)")
                 .set("opacity", "1")
                 .set("pointer-events", "auto")
-            toggleIcon.style.set("transform", "rotate(0deg)")
-            titleIcon.element.style.remove("display")
+
+            titleIcon.isVisible = true
+            headerLabel.isVisible = true
+            toggleIcon.isVisible = true
+
         } else {
             width = "56px"
             minWidth = "56px"
             maxWidth = "56px"
+
             contentWrapper.style
                 .set("max-height", "0")
                 .set("opacity", "0")
                 .set("pointer-events", "none")
-            toggleIcon.style.set("transform", "rotate(180deg)")
-            titleIcon.element.style.set("display", "none")
+
+            titleIcon.isVisible = true   // BLEIBT sichtbar (wichtig)
+            headerLabel.isVisible = false
+            toggleIcon.isVisible = false
         }
     }
 
