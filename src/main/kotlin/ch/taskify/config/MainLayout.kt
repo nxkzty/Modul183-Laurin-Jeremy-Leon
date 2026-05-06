@@ -8,17 +8,22 @@ import ch.taskify.view.home.Home
 import ch.taskify.view.settings.Settings
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.applayout.AppLayout
+import com.vaadin.flow.component.applayout.DrawerToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.component.sidenav.SideNav
+import com.vaadin.flow.component.sidenav.SideNavItem
+import com.vaadin.flow.router.AfterNavigationEvent
 import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.router.Layout
 import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import com.vaadin.flow.spring.security.AuthenticationContext
 import jakarta.annotation.PostConstruct
+
 
 @Layout
 @AnonymousAllowed
@@ -32,16 +37,22 @@ class MainLayout(
 
     @PostConstruct
     fun init() {
+        addDrawerToggle()
         createNavbar()
+        createDrawer()
     }
 
-    override fun afterNavigation(event: com.vaadin.flow.router.AfterNavigationEvent?) {
+    override fun afterNavigation(event: AfterNavigationEvent?) {
         highlightActiveTab(event)
+    }
+
+    private fun isUserLoggedIn(): Boolean {
+        return authenticationContext.principalName.isPresent
     }
 
     private fun createNavbar() {
         val title = createTitle()
-        val isLoggedIn = authenticationContext.principalName.isPresent
+        val isLoggedIn = isUserLoggedIn()
 
         navItems = getNavItems(isLoggedIn)
 
@@ -71,6 +82,49 @@ class MainLayout(
 
         addToNavbar(navbar)
     }
+
+    private fun createDrawer() {
+        if (isUserLoggedIn()) {
+
+            val nav = SideNav()
+
+            val dashboardItem = SideNavItem("Dashboard", "/myTaskify").apply {
+
+                // Zugriff auf das innere Element
+                element.style.set("border-radius", "10px")
+                element.style.set("overflow", "hidden")
+
+                element.style.set("margin", "4px 8px")
+            }
+
+            nav.addItem(dashboardItem)
+            addToDrawer(nav)
+        }
+    }
+
+    private fun addDrawerToggle() {
+        if (isUserLoggedIn()) {
+
+            val toggle = DrawerToggle().apply {
+
+                style.set("cursor", "pointer")
+
+                style.set("border-radius", "8px")
+                style.set("padding", "6px")
+                style.set("transition", "background 0.2s ease")
+
+                element.addEventListener("mouseover") {
+                    style.set("background", "var(--lumo-contrast-5pct)")
+                }
+
+                element.addEventListener("mouseout") {
+                    style.remove("background")
+                }
+            }
+            addToNavbar(toggle)
+        }
+    }
+
 
     private fun getNavItems(isLoggedIn: Boolean): List<NavTabs> {
         return if (isLoggedIn) {
@@ -114,7 +168,7 @@ class MainLayout(
         }
     }
 
-    private fun highlightActiveTab(event: com.vaadin.flow.router.AfterNavigationEvent?) {
+    private fun highlightActiveTab(event: AfterNavigationEvent?) {
 
         val current = event?.location?.path ?: ""
 
