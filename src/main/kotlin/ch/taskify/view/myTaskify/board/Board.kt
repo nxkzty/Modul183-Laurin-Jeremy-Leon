@@ -78,10 +78,10 @@ class Board(
                 .set("gap", "16px")
                 .set("padding", "0 clamp(16px, 3vw, 32px) 32px")
                 .set("box-sizing", "border-box")
-                .set("overflow-x", "auto")          // scroll auf kleinen screens
+                .set("overflow-x", "auto")
                 .set("overflow-y", "auto")
                 .set("align-items", "stretch")
-                .set("flex-wrap", "nowrap")          // immer nebeneinander, scroll statt umbrechen
+                .set("flex-wrap", "nowrap")
         }
 
         add(boardContent)
