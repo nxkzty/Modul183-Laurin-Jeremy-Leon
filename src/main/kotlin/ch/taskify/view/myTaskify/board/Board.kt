@@ -22,8 +22,10 @@ class Board(
 ) : VerticalLayout() {
 
     private val boardContent = HorizontalLayout()
+    private val outerLayout = HorizontalLayout()
     private var draggedTask: TaskDTO? = null
     private val columns = mutableListOf<BoardColumn>()
+    private var statsSidebar: BoardStatsSidebar? = null
 
     init {
         setSizeFull()
@@ -59,41 +61,68 @@ class Board(
             style.set("gap", "4px")
         }
 
-        add(HorizontalLayout(textBlock).apply {
-            setWidthFull()
-            defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
-            style
-                .set("padding", "clamp(16px, 3vw, 28px) clamp(16px, 3vw, 32px) 20px")
-                .set("box-sizing", "border-box")
-        })
+        add(
+            HorizontalLayout(textBlock).apply {
+                setWidthFull()
+                defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
+                style
+                    .set("padding", "clamp(16px, 3vw, 28px) clamp(16px, 3vw, 32px) 20px")
+                    .set("box-sizing", "border-box")
+            }
+        )
     }
 
     private fun buildBoard() {
         boardContent.apply {
+            setHeightFull()
+            isPadding = false
+            isSpacing = false
+            width = "0"
+            element.style.set("flex", "1 1 auto")
+            style
+                .set("gap", "16px")
+                .set("align-items", "stretch")
+                .set("flex-wrap", "nowrap")
+                .set("overflow-x", "auto")
+                .set("overflow-y", "visible")
+                .set("min-width", "0")
+        }
+
+        outerLayout.apply {
             setWidthFull()
             setHeightFull()
             isPadding = false
             isSpacing = false
             style
+                .set("display", "flex")
+                .set("flex-direction", "row")
                 .set("gap", "16px")
                 .set("padding", "0 clamp(16px, 3vw, 32px) 32px")
                 .set("box-sizing", "border-box")
-                .set("overflow-x", "auto")
-                .set("overflow-y", "auto")
                 .set("align-items", "stretch")
-                .set("flex-wrap", "nowrap")
+                .set("overflow", "hidden")
         }
 
-        add(boardContent)
-        expand(boardContent)
+        statsSidebar = BoardStatsSidebar(loadBoardTasks())
+        outerLayout.add(boardContent, statsSidebar)
+
+        add(outerLayout)
+        expand(outerLayout)
         refreshBoard()
     }
 
     private fun refreshBoard() {
-        val tasksByState = loadBoardTasks().groupBy { it.state }
+        val tasks = loadBoardTasks()
+        val tasksByState = tasks.groupBy { it.state }
 
         boardContent.removeAll()
         columns.clear()
+
+        statsSidebar?.let {
+            outerLayout.remove(it)
+        }
+        statsSidebar = BoardStatsSidebar(tasks)
+        outerLayout.add(statsSidebar)
 
         State.entries.forEach { state ->
             val column = BoardColumn(
@@ -102,7 +131,6 @@ class Board(
                 onDrop = { targetState -> moveDraggedTaskTo(targetState) },
                 cardFactory = { task -> createTaskCard(task) }
             )
-
             columns.add(column)
             boardContent.add(column)
         }
