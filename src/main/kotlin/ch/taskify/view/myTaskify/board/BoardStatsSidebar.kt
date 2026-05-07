@@ -76,9 +76,7 @@ class BoardStatsSidebar(
         }
 
         return HorizontalLayout(titleIcon, headerLabel, toggleIcon).apply {
-
             setWidthFull()
-
             isPadding = false
             isSpacing = false
 
@@ -137,36 +135,31 @@ class BoardStatsSidebar(
 
     private fun setExpanded(expanded: Boolean) {
         isExpanded = expanded
-
         if (expanded) {
-
             width = "320px"
             minWidth = "320px"
             maxWidth = "320px"
-
             contentWrapper.style
                 .set("max-height", "calc(100vh - 120px)")
                 .set("opacity", "1")
                 .set("pointer-events", "auto")
-
             titleIcon.isVisible = true
             headerLabel.isVisible = true
             toggleIcon.isVisible = true
+            justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
 
         } else {
-
             width = "56px"
             minWidth = "56px"
             maxWidth = "56px"
-
             contentWrapper.style
                 .set("max-height", "0")
                 .set("opacity", "0")
                 .set("pointer-events", "none")
-
             titleIcon.isVisible = true
             headerLabel.isVisible = false
             toggleIcon.isVisible = false
+            justifyContentMode = FlexComponent.JustifyContentMode.CENTER
         }
     }
 

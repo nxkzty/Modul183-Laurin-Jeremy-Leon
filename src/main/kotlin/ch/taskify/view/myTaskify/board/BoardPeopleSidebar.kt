@@ -44,7 +44,6 @@ class BoardPeopleSidebar(
     }
 
     private fun buildHeader(): HorizontalLayout {
-
         val icon = Icon(VaadinIcon.USERS).apply {
             style
                 .set("width", "16px")
@@ -120,11 +119,8 @@ class BoardPeopleSidebar(
     }
 
     private fun buildContent(): VerticalLayout {
-
         val openTasks = tasks.filter { it.state != State.COMPLETE }
-
-        val grouped =
-            openTasks.groupBy { it.assigneeUsername ?: "Nicht zugewiesen" }
+        val grouped = openTasks.groupBy { it.assigneeUsername ?: "Nicht zugewiesen" }
                 .toList()
                 .sortedByDescending { it.second.size }
 
@@ -133,12 +129,9 @@ class BoardPeopleSidebar(
         }
 
         return VerticalLayout(*rows.toTypedArray()).apply {
-
             setWidthFull()
-
             isPadding = false
             isSpacing = false
-
             style.set("gap", "10px")
         }
     }
@@ -162,7 +155,6 @@ class BoardPeopleSidebar(
         }
 
         val countBadge = Div(Span(count.toString())).apply {
-
             style
                 .set("min-width", "28px")
                 .set("height", "28px")
@@ -179,25 +171,18 @@ class BoardPeopleSidebar(
         }
 
         val userLayout = HorizontalLayout(avatar, name).apply {
-
             isPadding = false
             isSpacing = false
-
             alignItems = FlexComponent.Alignment.CENTER
-
             style.set("gap", "10px")
         }
 
         return HorizontalLayout(userLayout, countBadge).apply {
-
             setWidthFull()
-
             isPadding = false
             isSpacing = false
-
             justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
             alignItems = FlexComponent.Alignment.CENTER
-
             style
                 .set("padding", "8px 0")
                 .set("border-bottom", "1px solid rgba(148, 163, 184, 0.12)")
@@ -221,6 +206,7 @@ class BoardPeopleSidebar(
 
             headerLabel.isVisible = true
             toggleIcon.isVisible = true
+            justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
         } else {
             width = "56px"
             minWidth = "56px"
@@ -231,6 +217,7 @@ class BoardPeopleSidebar(
 
             headerLabel.isVisible = false
             toggleIcon.isVisible = false
+            justifyContentMode = FlexComponent.JustifyContentMode.CENTER
         }
     }
 }

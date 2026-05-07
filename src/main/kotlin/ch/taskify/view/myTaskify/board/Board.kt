@@ -40,9 +40,7 @@ class Board(
     private var assigneeFilter: Set<String> = emptySet()
 
     init {
-
         setSizeFull()
-
         isPadding = false
         isSpacing = false
 
@@ -51,18 +49,13 @@ class Board(
                 "background",
                 "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)"
             )
-
         buildHeader()
-
         buildFilters()
-
         buildBoard()
     }
 
     private fun buildHeader() {
-
         val title = H1("Board").apply {
-
             style
                 .set("margin", "0")
                 .set("font-size", "clamp(22px, 4vw, 32px)")
@@ -71,32 +64,21 @@ class Board(
         }
 
         val subtitle =
-            Span(
-                "Alle Aufgaben nach Status. Ziehe Karten zwischen die Spalten, um den Status zu ändern."
-            ).apply {
-
+            Span("Alle Aufgaben nach Status. Ziehe Karten zwischen die Spalten, um den Status zu ändern.").apply {
                 style
                     .set("color", "#64748b")
                     .set("font-size", "14px")
             }
 
         val textBlock = VerticalLayout(title, subtitle).apply {
-
             isPadding = false
             isSpacing = false
-
-            style
-                .set("gap", "6px")
+            style.set("gap", "6px")
         }
 
-        add(
-            HorizontalLayout(textBlock).apply {
-
+        add(HorizontalLayout(textBlock).apply {
                 setWidthFull()
-
-                defaultVerticalComponentAlignment =
-                    FlexComponent.Alignment.CENTER
-
+                defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
                 style
                     .set(
                         "padding",
@@ -108,7 +90,6 @@ class Board(
     }
 
     private fun buildFilters() {
-
         add(
             BoardFilterBar(
                 users = users,
@@ -125,16 +106,11 @@ class Board(
 
     private fun buildBoard() {
         boardContent.apply {
-
             setHeightFull()
-
             isPadding = false
             isSpacing = false
-
             width = "0"
-
             element.style.set("flex", "1 1 auto")
-
             style
                 .set("gap", "18px")
                 .set("align-items", "stretch")
@@ -148,14 +124,12 @@ class Board(
         outerLayout.apply {
             setWidthFull()
             setHeightFull()
-
             isPadding = false
             isSpacing = false
-
             style
                 .set("display", "flex")
                 .set("flex-direction", "row")
-                .set("gap", "18px")
+                .set("gap", "8px")
                 .set(
                     "padding",
                     "0 clamp(16px, 3vw, 32px) 32px"
@@ -166,9 +140,7 @@ class Board(
         }
 
         add(outerLayout)
-
         expand(outerLayout)
-
         refreshBoard()
     }
 
@@ -179,9 +151,7 @@ class Board(
         columns.clear()
         outerLayout.removeAll()
 
-        val sidebar = VerticalLayout(
-            BoardStatsSidebar(tasks),
-            BoardPeopleSidebar(tasks)
+        val sidebar = VerticalLayout(BoardStatsSidebar(tasks), BoardPeopleSidebar(tasks)
         ).apply {
             isPadding = false
             isSpacing = false
@@ -208,7 +178,6 @@ class Board(
             )
 
             columns.add(column)
-
             boardContent.add(column)
         }
     }
