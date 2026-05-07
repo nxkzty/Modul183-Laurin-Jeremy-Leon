@@ -13,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
 class BoardStatsSidebar(
     private val tasks: List<TaskDTO>,
-    private val initiallyExpanded: Boolean = true,
+    initiallyExpanded: Boolean = true,
     private val onExpandedChange: ((Boolean) -> Unit)? = null,
 ) : VerticalLayout() {
 
