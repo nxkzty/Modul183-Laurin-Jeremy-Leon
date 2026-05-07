@@ -36,9 +36,16 @@ class MainLayout(
 
     @PostConstruct
     fun init() {
+        applyContentStyling()
         addDrawerToggle()
         createNavbar()
         createDrawer()
+    }
+
+    private fun applyContentStyling() {
+        element.style
+            .set("background", "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)")
+            .set("min-height", "100vh")
     }
 
     override fun afterNavigation(event: AfterNavigationEvent?) {

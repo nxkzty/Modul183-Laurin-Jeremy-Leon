@@ -31,10 +31,6 @@ class Board(
         setSizeFull()
         isPadding = false
         isSpacing = false
-        style
-            .set("background", "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)")
-            .set("min-height", "100%")
-
         buildHeader()
         buildBoard()
     }
