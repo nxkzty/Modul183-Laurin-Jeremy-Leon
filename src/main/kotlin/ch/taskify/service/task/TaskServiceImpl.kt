@@ -42,6 +42,9 @@ class TaskServiceImpl(
         existing.description = task.description
         existing.state = task.state
         existing.risk = task.risk
+        existing.assignee = task.assigneeUsername
+            ?.trim()
+            ?.let { userRepository.findByNameIgnoreCase(it) }
 
         return taskRepository.save(existing).toDto()
     }
