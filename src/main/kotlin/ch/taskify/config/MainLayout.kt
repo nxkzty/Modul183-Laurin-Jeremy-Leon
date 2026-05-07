@@ -24,7 +24,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed
 import com.vaadin.flow.spring.security.AuthenticationContext
 import jakarta.annotation.PostConstruct
 
-
 @Layout
 @AnonymousAllowed
 class MainLayout(
@@ -44,6 +43,7 @@ class MainLayout(
 
     override fun afterNavigation(event: AfterNavigationEvent?) {
         highlightActiveTab(event)
+        updateDrawerVisibility(event)
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -184,7 +184,7 @@ class MainLayout(
 
             val isActive = when {
                 route.isEmpty() && normalized.isEmpty() -> true
-                route.isNotEmpty() && normalized == route -> true
+                route.isNotEmpty() && (normalized == route || normalized.startsWith("$route/")) -> true
                 else -> false
             }
 
@@ -196,6 +196,13 @@ class MainLayout(
                 tab.style.remove("font-weight")
             }
         }
+    }
+
+    private fun updateDrawerVisibility(event: AfterNavigationEvent?) {
+        val path = normalizePath(event?.location?.path ?: "")
+        val showDrawer = path == "myTaskify" || path.startsWith("myTaskify/")
+        isDrawerOpened = showDrawer
+        element.style.set("--vaadin-drawer-offset-left", if (showDrawer) "" else "0px")
     }
 
     private fun normalizePath(path: String): String {
