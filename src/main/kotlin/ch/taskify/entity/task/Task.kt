@@ -12,6 +12,7 @@ class Task : BaseEntity() {
     @Enumerated(EnumType.STRING)
     var state: State = State.OPEN
 
+    @Column(length = 5000)
     var description: String = ""
 
     @ManyToOne(fetch = FetchType.LAZY)

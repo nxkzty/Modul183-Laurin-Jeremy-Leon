@@ -1,0 +1,3 @@
+ALTER TABLE task
+ALTER
+COLUMN description TYPE VARCHAR(5000) USING (description::VARCHAR(5000));

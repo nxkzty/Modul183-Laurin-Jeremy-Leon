@@ -63,7 +63,7 @@ class TaskDialog(
             .bind(TaskDTO::title, TaskDTO::title::set)
 
         binder.forField(description)
-            .withValidator({ it.length <= 500 }, "Maximal 500 Zeichen")
+            .withValidator({ it.length <= 800 }, "Maximal 800 Zeichen")
             .bind(TaskDTO::description, TaskDTO::description::set)
 
         binder.forField(state)

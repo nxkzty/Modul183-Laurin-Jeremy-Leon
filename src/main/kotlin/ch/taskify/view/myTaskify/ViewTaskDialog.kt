@@ -23,9 +23,11 @@ class ViewTaskDialog(
     subtitleText = "Aufgabe Details"
 ) {
 
-    private val createdAtFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN)
+    private val createdAtFormatter =
+        DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN)
 
     init {
+
         setDialogWidth("640px")
 
         val createdAtBadge = Span(formatCreatedAt(task.createdAt)).apply {
@@ -37,71 +39,129 @@ class ViewTaskDialog(
                 .set("white-space", "nowrap")
                 .set("margin-left", "8px")
         }
+
         addHeaderBadgeRightAligned(createdAtBadge)
 
         buildContent()
 
         val editButton = Button("Bearbeiten", Icon(VaadinIcon.EDIT)) {
+
             close()
+
             onEdit()
         }
 
-        setButtons(primary(editButton), closeButton("Schliessen"))
+        setButtons(
+            primary(editButton),
+            closeButton("Schliessen")
+        )
     }
 
     private fun buildContent() {
+
         val content = VerticalLayout().apply {
+
             setWidthFull()
+
             isPadding = false
             isSpacing = false
+
             style.set("gap", "16px")
         }
 
         val badgeRow = HorizontalLayout().apply {
+
             isPadding = false
             isSpacing = false
+
             style.set("gap", "8px")
+
             alignItems = FlexComponent.Alignment.CENTER
         }
+
         badgeRow.add(TaskBadges.stateBadge(task.state))
-        task.risk?.let { badgeRow.add(TaskBadges.riskBadge(it)) }
+
+        task.risk?.let {
+            badgeRow.add(TaskBadges.riskBadge(it))
+        }
 
         content.add(badgeRow)
 
         if (task.description.isNotBlank()) {
-            content.add(section("Beschreibung", Span(task.description).apply {
-                style
-                    .set("color", "var(--lumo-secondary-text-color)")
-                    .set("font-size", "var(--lumo-font-size-s)")
-                    .set("line-height", "1.6")
-                    .set("white-space", "pre-wrap")
-            }))
+
+            content.add(
+                section(
+                    "Beschreibung",
+
+                    Span(task.description).apply {
+
+                        style
+                            .set("color", "var(--lumo-secondary-text-color)")
+                            .set("font-size", "var(--lumo-font-size-s)")
+                            .set("line-height", "1.6")
+                            .set("white-space", "pre-wrap")
+                            .set("overflow-wrap", "break-word")
+                            .set("word-break", "break-word")
+                            .set("max-width", "100%")
+                    }
+                )
+            )
         }
 
-        task.assigneeUsername?.let { content.add(section("Zuständig", userRow(it))) }
-        task.issuerUsername?.let { content.add(section("Erstellt von", userRow(it))) }
+        task.assigneeUsername?.let {
+            content.add(
+                section(
+                    "Zuständig",
+                    userRow(it)
+                )
+            )
+        }
+
+        task.issuerUsername?.let {
+            content.add(
+                section(
+                    "Erstellt von",
+                    userRow(it)
+                )
+            )
+        }
 
         addContent(content)
     }
 
     private fun userRow(username: String): HorizontalLayout {
+
         val avatar = Avatar(username).apply {
+
             setWidth("28px")
             setHeight("28px")
         }
+
         val name = Span(username).apply {
             style.set("font-size", "var(--lumo-font-size-s)")
         }
-        return HorizontalLayout(avatar, name).apply {
+
+        return HorizontalLayout(
+            avatar,
+            name
+        ).apply {
+
             alignItems = FlexComponent.Alignment.CENTER
+
             isPadding = false
             isSpacing = false
+
             style.set("gap", "8px")
         }
     }
 
-    private fun section(label: String, valueComponent: Component): VerticalLayout {
+    private fun section(
+        label: String,
+        valueComponent: Component
+    ): VerticalLayout {
+
         val labelSpan = Span(label).apply {
+
             style
                 .set("font-size", "var(--lumo-font-size-xs)")
                 .set("font-weight", "600")
@@ -109,14 +169,23 @@ class ViewTaskDialog(
                 .set("text-transform", "uppercase")
                 .set("letter-spacing", "0.05em")
         }
-        return VerticalLayout(labelSpan, valueComponent).apply {
+
+        return VerticalLayout(
+            labelSpan,
+            valueComponent
+        ).apply {
+
             isPadding = false
             isSpacing = false
+
             style
                 .set("gap", "4px")
                 .set("padding", "12px")
                 .set("background", "var(--lumo-contrast-5pct)")
                 .set("border-radius", "8px")
+                .set("width", "100%")
+                .set("box-sizing", "border-box")
+                .set("overflow", "hidden")
         }
     }
 
