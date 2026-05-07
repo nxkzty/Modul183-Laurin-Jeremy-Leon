@@ -4,7 +4,7 @@ import ch.taskify.dto.TaskDTO
 import ch.taskify.service.task.TaskService
 import ch.taskify.service.user.UserService
 import ch.taskify.utils.CurrentUser
-import ch.taskify.view.myTaskify.CreateTaskDialog
+import ch.taskify.view.myTaskify.TaskDialog
 import ch.taskify.view.myTaskify.TasksGrid
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -64,13 +64,13 @@ class MyTaskify(
         val createButton = Button("Neue Aufgabe", Icon(VaadinIcon.PLUS)).apply {
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             addClickListener {
-                val createTaskDialog = CreateTaskDialog(
+                val taskDialog = TaskDialog(
                     taskService,
                     userService.findAll(),
                     onSave = { refreshGrid() },
                     currentUsername = CurrentUser.name
                 )
-                createTaskDialog.open()
+                taskDialog.open()
             }
         }
 

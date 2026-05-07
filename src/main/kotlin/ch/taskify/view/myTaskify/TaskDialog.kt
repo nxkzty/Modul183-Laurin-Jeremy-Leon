@@ -19,7 +19,7 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.data.renderer.ComponentRenderer
 
-class CreateTaskDialog(
+class TaskDialog(
     private val taskService: TaskService,
     private val users: List<UserDTO>,
     private val currentUsername: String,

@@ -4,13 +4,17 @@ import ch.taskify.dto.TaskDTO
 import ch.taskify.utils.dialog.TADialog
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.avatar.Avatar
+import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.icon.Icon
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
 class ViewTaskDialog(
-    private val task: TaskDTO
+    private val task: TaskDTO,
+    private val onEdit: () -> Unit,
 ) : TADialog(
     titleText = task.title,
     subtitleText = "Aufgabe Details"
@@ -19,7 +23,13 @@ class ViewTaskDialog(
     init {
         setDialogWidth("640px")
         buildContent()
-        setButtons(closeButton("Schliessen"))
+
+        val editButton = Button("Bearbeiten", Icon(VaadinIcon.EDIT)) {
+            close()
+            onEdit()
+        }
+
+        setButtons(primary(editButton), closeButton("Schliessen"))
     }
 
     private fun buildContent() {

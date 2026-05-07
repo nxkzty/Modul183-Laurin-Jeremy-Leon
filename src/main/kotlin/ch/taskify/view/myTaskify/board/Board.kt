@@ -1,8 +1,11 @@
 package ch.taskify.view.myTaskify.board
 
 import ch.taskify.dto.TaskDTO
+import ch.taskify.dto.UserDTO
 import ch.taskify.entity.task.State
 import ch.taskify.service.task.TaskService
+import ch.taskify.service.user.UserService
+import ch.taskify.utils.CurrentUser
 import ch.taskify.utils.notify.Notify
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.html.H1
@@ -19,6 +22,7 @@ import jakarta.annotation.security.PermitAll
 @PermitAll
 class Board(
     private val taskService: TaskService,
+    private val userService: UserService,
 ) : VerticalLayout() {
 
     private val boardContent = HorizontalLayout()
@@ -26,6 +30,7 @@ class Board(
     private var draggedTask: TaskDTO? = null
     private val columns = mutableListOf<BoardColumn>()
     private var statsSidebar: BoardStatsSidebar? = null
+    private val users: List<UserDTO> by lazy { userService.findAll() }
 
     init {
         setSizeFull()
@@ -114,9 +119,7 @@ class Board(
         boardContent.removeAll()
         columns.clear()
 
-        statsSidebar?.let {
-            outerLayout.remove(it)
-        }
+        statsSidebar?.let { outerLayout.remove(it) }
         statsSidebar = BoardStatsSidebar(tasks)
         outerLayout.add(statsSidebar)
 
@@ -132,13 +135,15 @@ class Board(
         }
     }
 
-    private fun loadBoardTasks(): List<TaskDTO> {
-        return taskService.getAll()
-    }
+    private fun loadBoardTasks(): List<TaskDTO> = taskService.getAll()
 
     private fun createTaskCard(task: TaskDTO): Component {
         return BoardTaskCard(
             task = task,
+            taskService = taskService,
+            users = users,
+            currentUsername = CurrentUser.name,
+            onRefresh = { refreshBoard() },
             onDragStart = {
                 draggedTask = task
                 columns.forEach { it.highlightDropZone() }

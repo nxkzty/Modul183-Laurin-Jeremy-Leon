@@ -69,17 +69,7 @@ class TasksGrid(
         addComponentColumn { task ->
             val edit = Button(Icon(VaadinIcon.EDIT)).apply {
                 addThemeVariants(ButtonVariant.LUMO_TERTIARY)
-                addClickListener {
-                    //todo Laurin: asignee wird noch nicht richtig editiert
-                    Notify.warning("Verantwortlicher wird nicht richtig editiert!")
-                    CreateTaskDialog(
-                        taskService = taskService,
-                        users = users,
-                        currentUsername = currentUsername,
-                        onSave = onRefresh,
-                        existingTask = task
-                    ).open()
-                }
+                addClickListener { openEditDialog(task) }
             }
 
             val delete = Button(Icon(VaadinIcon.TRASH)).apply {
@@ -107,8 +97,21 @@ class TasksGrid(
         }.setHeader("")
 
         addItemDoubleClickListener { event ->
-            ViewTaskDialog(event.item).open()
+            ViewTaskDialog(
+                task = event.item,
+                onEdit = { openEditDialog(event.item) }
+            ).open()
         }
+    }
+
+    private fun openEditDialog(task: TaskDTO) {
+        TaskDialog(
+            taskService = taskService,
+            users = users,
+            currentUsername = currentUsername,
+            onSave = onRefresh,
+            existingTask = task
+        ).open()
     }
 
     private fun userCell(username: String?): HorizontalLayout {

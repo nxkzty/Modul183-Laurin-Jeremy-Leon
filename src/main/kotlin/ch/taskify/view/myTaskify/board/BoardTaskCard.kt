@@ -1,6 +1,9 @@
 package ch.taskify.view.myTaskify.board
 
 import ch.taskify.dto.TaskDTO
+import ch.taskify.dto.UserDTO
+import ch.taskify.service.task.TaskService
+import ch.taskify.view.myTaskify.TaskDialog
 import ch.taskify.view.myTaskify.TaskBadges
 import ch.taskify.view.myTaskify.ViewTaskDialog
 import com.vaadin.flow.component.avatar.Avatar
@@ -12,6 +15,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
 class BoardTaskCard(
     private val task: TaskDTO,
+    private val taskService: TaskService,
+    private val users: List<UserDTO>,
+    private val currentUsername: String,
+    private val onRefresh: () -> Unit,
     private val onDragStart: () -> Unit,
     private val onDragEnd: () -> Unit,
 ) : VerticalLayout() {
@@ -44,11 +51,25 @@ class BoardTaskCard(
                 .set("border-color", "rgba(148, 163, 184, 0.28)")
         }
         element.addEventListener("dblclick") {
-            ViewTaskDialog(task).open()
+            ViewTaskDialog(
+                task = task,
+                onEdit = { openEditDialog(task) }
+            ).open()
         }
 
         add(header(), description(), footer())
         configureDragSource()
+    }
+
+
+    private fun openEditDialog(task: TaskDTO) {
+        TaskDialog(
+            taskService = taskService,
+            users = users,
+            currentUsername = currentUsername,
+            onSave = onRefresh,
+            existingTask = task
+        ).open()
     }
 
     private fun header(): VerticalLayout {
@@ -109,7 +130,6 @@ class BoardTaskCard(
                 .set("gap", "8px")
                 .set("min-width", "0")
         }
-
 
         return HorizontalLayout(user).apply {
             setWidthFull()
