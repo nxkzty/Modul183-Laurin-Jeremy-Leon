@@ -11,7 +11,11 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
+class BoardStatsSidebar(
+    private val tasks: List<TaskDTO>,
+    private val initiallyExpanded: Boolean = true,
+    private val onExpandedChange: ((Boolean) -> Unit)? = null,
+) : VerticalLayout() {
 
     private var isExpanded = true
     private val contentWrapper = VerticalLayout()
@@ -41,7 +45,7 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
 
         add(buildToggleHeader(), buildScrollableContent())
 
-        setExpanded(true)
+        setExpanded(initiallyExpanded)
     }
 
     private fun buildToggleHeader(): HorizontalLayout {
@@ -128,9 +132,11 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
     private fun toggleSidebar() {
         isExpanded = !isExpanded
         setExpanded(isExpanded)
+        onExpandedChange?.invoke(isExpanded)
     }
 
     private fun setExpanded(expanded: Boolean) {
+        isExpanded = expanded
 
         if (expanded) {
 

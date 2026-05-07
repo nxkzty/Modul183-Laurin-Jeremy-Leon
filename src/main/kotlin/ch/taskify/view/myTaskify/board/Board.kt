@@ -30,6 +30,7 @@ class Board(
     private var draggedTask: TaskDTO? = null
     private val columns = mutableListOf<BoardColumn>()
     private var statsSidebar: BoardStatsSidebar? = null
+    private var statsSidebarExpanded = true
     private val users: List<UserDTO> by lazy { userService.findAll() }
 
     init {
@@ -104,7 +105,7 @@ class Board(
                 .set("overflow", "hidden")
         }
 
-        statsSidebar = BoardStatsSidebar(loadBoardTasks())
+        statsSidebar = createStatsSidebar(loadBoardTasks())
         outerLayout.add(boardContent, statsSidebar)
 
         add(outerLayout)
@@ -120,7 +121,7 @@ class Board(
         columns.clear()
 
         statsSidebar?.let { outerLayout.remove(it) }
-        statsSidebar = BoardStatsSidebar(tasks)
+        statsSidebar = createStatsSidebar(tasks)
         outerLayout.add(statsSidebar)
 
         State.entries.forEach { state ->
@@ -136,6 +137,14 @@ class Board(
     }
 
     private fun loadBoardTasks(): List<TaskDTO> = taskService.getAll()
+
+    private fun createStatsSidebar(tasks: List<TaskDTO>): BoardStatsSidebar {
+        return BoardStatsSidebar(
+            tasks = tasks,
+            initiallyExpanded = statsSidebarExpanded,
+            onExpandedChange = { statsSidebarExpanded = it }
+        )
+    }
 
     private fun createTaskCard(task: TaskDTO): Component {
         return BoardTaskCard(

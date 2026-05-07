@@ -22,9 +22,8 @@ class BoardColumn(
     init {
         setHeightFull()
         minWidth = "260px"
-        maxWidth = "420px"
-        width = "100%"
-        element.style.set("flex", "1 1 280px")
+        width = "0"
+        element.style.set("flex", "1 1 0")
         isPadding = false
         isSpacing = false
         style
