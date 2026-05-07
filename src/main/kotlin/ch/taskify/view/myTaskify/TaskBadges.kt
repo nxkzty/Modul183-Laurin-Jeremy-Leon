@@ -8,7 +8,7 @@ object TaskBadges {
 
     private val STATE_COLORS = mapOf(
         State.OPEN        to Triple("Offen",           "#e5e7eb", "#6b7280"),
-        State.TODO        to Triple("To Do",           "#dbeafe", "#3b82f6"),
+        State.TODO        to Triple("Zu erledigen",           "#dbeafe", "#3b82f6"),
         State.IN_PROGRESS to Triple("In Bearbeitung",  "#fef3c7", "#f59e0b"),
         State.IN_REVIEW   to Triple("In Review",       "#ede9fe", "#8b5cf6"),
         State.COMPLETE    to Triple("Abgeschlossen",   "#d1fae5", "#10b981")
