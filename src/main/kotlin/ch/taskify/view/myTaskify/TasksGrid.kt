@@ -26,6 +26,10 @@ class TasksGrid(
     init {
         width = "100%"
         addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
+        style
+            .set("border-radius", "12px")
+            .set("overflow", "hidden")
+            .set("box-shadow", "0 1px 4px rgba(0,0,0,0.06)")
 
         addColumn(TaskDTO::title)
             .setHeader("Titel")
