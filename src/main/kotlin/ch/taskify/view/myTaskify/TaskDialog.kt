@@ -24,7 +24,7 @@ class TaskDialog(
     private val users: List<UserDTO>,
     private val currentUsername: String,
     private val onSave: () -> Unit,
-    private val existingTask: TaskDTO? = null,
+    existingTask: TaskDTO? = null,
 ) : TADialog(
     titleText = if (existingTask != null) "Aufgabe bearbeiten" else "Aufgabe erstellen",
     subtitleText = if (existingTask != null) "Änderungen werden sofort gespeichert." else "Erstelle eine Aufgabe und weise sie einem Mitarbeiter zu."
