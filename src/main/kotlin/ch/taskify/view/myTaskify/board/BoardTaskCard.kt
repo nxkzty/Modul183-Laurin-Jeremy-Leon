@@ -12,6 +12,9 @@ import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class BoardTaskCard(
     private val task: TaskDTO,
@@ -22,6 +25,8 @@ class BoardTaskCard(
     private val onDragStart: () -> Unit,
     private val onDragEnd: () -> Unit,
 ) : VerticalLayout() {
+
+    private val createdAtFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN)
 
     init {
         setWidthFull()
@@ -60,7 +65,6 @@ class BoardTaskCard(
         add(header(), description(), footer())
         configureDragSource()
     }
-
 
     private fun openEditDialog(task: TaskDTO) {
         TaskDialog(
@@ -113,6 +117,7 @@ class BoardTaskCard(
             setWidth("28px")
             setHeight("28px")
         }
+
         val assigneeLabel = Span(assignee).apply {
             style
                 .set("color", "#475569")
@@ -120,6 +125,15 @@ class BoardTaskCard(
                 .set("font-weight", "600")
                 .set("overflow", "hidden")
                 .set("text-overflow", "ellipsis")
+                .set("white-space", "nowrap")
+        }
+
+        val createdAtLabel = Span(formatCreatedAt(task.createdAt)).apply {
+            style
+                .set("color", "#94a3b8")
+                .set("font-size", "12px")
+                .set("font-weight", "500")
+                .set("white-space", "nowrap")
         }
 
         val user = HorizontalLayout(avatar, assigneeLabel).apply {
@@ -131,7 +145,7 @@ class BoardTaskCard(
                 .set("min-width", "0")
         }
 
-        return HorizontalLayout(user).apply {
+        return HorizontalLayout(user, createdAtLabel).apply {
             setWidthFull()
             isPadding = false
             isSpacing = false
@@ -141,6 +155,10 @@ class BoardTaskCard(
                 .set("gap", "12px")
                 .set("padding-top", "4px")
         }
+    }
+
+    private fun formatCreatedAt(createdAt: LocalDateTime?): String {
+        return createdAt?.let { "Erstellt ${it.format(createdAtFormatter)}" } ?: "Erstellt unbekannt"
     }
 
     private fun configureDragSource() {

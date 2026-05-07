@@ -11,6 +11,9 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class ViewTaskDialog(
     private val task: TaskDTO,
@@ -20,8 +23,22 @@ class ViewTaskDialog(
     subtitleText = "Aufgabe Details"
 ) {
 
+    private val createdAtFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN)
+
     init {
         setDialogWidth("640px")
+
+        val createdAtBadge = Span(formatCreatedAt(task.createdAt)).apply {
+            style
+                .set("font-size", "11px")
+                .set("color", "var(--lumo-tertiary-text-color)")
+                .set("font-weight", "500")
+                .set("line-height", "1")
+                .set("white-space", "nowrap")
+                .set("margin-left", "8px")
+        }
+        addHeaderBadgeRightAligned(createdAtBadge)
+
         buildContent()
 
         val editButton = Button("Bearbeiten", Icon(VaadinIcon.EDIT)) {
@@ -34,6 +51,7 @@ class ViewTaskDialog(
 
     private fun buildContent() {
         val content = VerticalLayout().apply {
+            setWidthFull()
             isPadding = false
             isSpacing = false
             style.set("gap", "16px")
@@ -100,5 +118,9 @@ class ViewTaskDialog(
                 .set("background", "var(--lumo-contrast-5pct)")
                 .set("border-radius", "8px")
         }
+    }
+
+    private fun formatCreatedAt(createdAt: LocalDateTime?): String {
+        return createdAt?.format(createdAtFormatter) ?: "Unbekannt"
     }
 }

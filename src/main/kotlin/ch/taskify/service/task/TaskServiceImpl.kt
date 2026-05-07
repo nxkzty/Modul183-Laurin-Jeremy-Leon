@@ -8,6 +8,7 @@ import ch.taskify.utils.CurrentUser
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneId
 import java.util.*
 
 @Service
@@ -71,7 +72,10 @@ class TaskServiceImpl(
             state = this.state,
             risk = this.risk,
             assigneeUsername = this.assignee?.name,
-            issuerUsername = this.issuer?.name
+            issuerUsername = this.issuer?.name,
+            createdAt = this.createdAt
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
         )
 
     private fun TaskDTO.toEntity(): Task =

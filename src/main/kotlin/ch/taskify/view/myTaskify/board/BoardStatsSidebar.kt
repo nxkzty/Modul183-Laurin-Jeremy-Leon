@@ -144,7 +144,7 @@ class BoardStatsSidebar(private val tasks: List<TaskDTO>) : VerticalLayout() {
                 .set("opacity", "0")
                 .set("pointer-events", "none")
 
-            titleIcon.isVisible = true   // BLEIBT sichtbar (wichtig)
+            titleIcon.isVisible = true
             headerLabel.isVisible = false
             toggleIcon.isVisible = false
         }
