@@ -1,6 +1,9 @@
 package ch.taskify.view.myTaskify.board
 
 import ch.taskify.dto.TaskDTO
+import ch.taskify.dto.UserDTO
+import ch.taskify.service.task.TaskService
+import ch.taskify.view.myTaskify.TaskDialog
 import ch.taskify.view.myTaskify.TaskBadges
 import ch.taskify.view.myTaskify.ViewTaskDialog
 import com.vaadin.flow.component.avatar.Avatar
@@ -9,12 +12,21 @@ import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class BoardTaskCard(
     private val task: TaskDTO,
+    private val taskService: TaskService,
+    private val users: List<UserDTO>,
+    private val currentUsername: String,
+    private val onRefresh: () -> Unit,
     private val onDragStart: () -> Unit,
     private val onDragEnd: () -> Unit,
 ) : VerticalLayout() {
+
+    private val createdAtFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN)
 
     init {
         setWidthFull()
@@ -44,11 +56,24 @@ class BoardTaskCard(
                 .set("border-color", "rgba(148, 163, 184, 0.28)")
         }
         element.addEventListener("dblclick") {
-            ViewTaskDialog(task).open()
+            ViewTaskDialog(
+                task = task,
+                onEdit = { openEditDialog(task) }
+            ).open()
         }
 
         add(header(), description(), footer())
         configureDragSource()
+    }
+
+    private fun openEditDialog(task: TaskDTO) {
+        TaskDialog(
+            taskService = taskService,
+            users = users,
+            currentUsername = currentUsername,
+            onSave = onRefresh,
+            existingTask = task
+        ).open()
     }
 
     private fun header(): VerticalLayout {
@@ -92,6 +117,7 @@ class BoardTaskCard(
             setWidth("28px")
             setHeight("28px")
         }
+
         val assigneeLabel = Span(assignee).apply {
             style
                 .set("color", "#475569")
@@ -99,6 +125,15 @@ class BoardTaskCard(
                 .set("font-weight", "600")
                 .set("overflow", "hidden")
                 .set("text-overflow", "ellipsis")
+                .set("white-space", "nowrap")
+        }
+
+        val createdAtLabel = Span(formatCreatedAt(task.createdAt)).apply {
+            style
+                .set("color", "#94a3b8")
+                .set("font-size", "12px")
+                .set("font-weight", "500")
+                .set("white-space", "nowrap")
         }
 
         val user = HorizontalLayout(avatar, assigneeLabel).apply {
@@ -110,8 +145,7 @@ class BoardTaskCard(
                 .set("min-width", "0")
         }
 
-
-        return HorizontalLayout(user).apply {
+        return HorizontalLayout(user, createdAtLabel).apply {
             setWidthFull()
             isPadding = false
             isSpacing = false
@@ -121,6 +155,10 @@ class BoardTaskCard(
                 .set("gap", "12px")
                 .set("padding-top", "4px")
         }
+    }
+
+    private fun formatCreatedAt(createdAt: LocalDateTime?): String {
+        return createdAt?.let { "Erstellt ${it.format(createdAtFormatter)}" } ?: "Erstellt unbekannt"
     }
 
     private fun configureDragSource() {

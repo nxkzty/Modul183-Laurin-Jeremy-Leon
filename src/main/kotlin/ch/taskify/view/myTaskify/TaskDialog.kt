@@ -19,12 +19,12 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.data.renderer.ComponentRenderer
 
-class CreateTaskDialog(
+class TaskDialog(
     private val taskService: TaskService,
     private val users: List<UserDTO>,
     private val currentUsername: String,
     private val onSave: () -> Unit,
-    private val existingTask: TaskDTO? = null,
+    existingTask: TaskDTO? = null,
 ) : TADialog(
     titleText = if (existingTask != null) "Aufgabe bearbeiten" else "Aufgabe erstellen",
     subtitleText = if (existingTask != null) "Änderungen werden sofort gespeichert." else "Erstelle eine Aufgabe und weise sie einem Mitarbeiter zu."
@@ -63,7 +63,7 @@ class CreateTaskDialog(
             .bind(TaskDTO::title, TaskDTO::title::set)
 
         binder.forField(description)
-            .withValidator({ it.length <= 500 }, "Maximal 500 Zeichen")
+            .withValidator({ it.length <= 800 }, "Maximal 800 Zeichen")
             .bind(TaskDTO::description, TaskDTO::description::set)
 
         binder.forField(state)

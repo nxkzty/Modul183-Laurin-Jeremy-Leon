@@ -5,6 +5,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
@@ -17,21 +18,46 @@ abstract class TADialog(
     private val buttonLayout = HorizontalLayout()
     private val rootLayout = VerticalLayout()
 
+    private val title = Span(titleText).apply {
+        element.style
+            .set("font-size", "var(--lumo-font-size-xl)")
+            .set("font-weight", "600")
+            .set("line-height", "1.2")
+            .set("margin", "0")
+    }
+
+    private val titleRow = HorizontalLayout().apply {
+        setWidthFull()
+        isPadding = false
+        isSpacing = false
+        alignItems = FlexComponent.Alignment.CENTER
+        style
+            .set("gap", "8px")
+            .set("min-height", "28px")
+    }
+
+    private val headerLayout = VerticalLayout()
+
     init {
         width = "600px"
-
-        val title = Span(titleText).apply {
-            element.style
-                .set("font-size", "var(--lumo-font-size-xl)")
-                .set("font-weight", "600")
-        }
 
         val subtitle = subtitleText?.let {
             Span(it).apply {
                 element.style
                     .set("color", "var(--lumo-secondary-text-color)")
                     .set("font-size", "var(--lumo-font-size-s)")
+                    .set("line-height", "1.3")
             }
+        }
+
+        titleRow.add(title)
+
+        headerLayout.apply {
+            setPadding(false)
+            setSpacing(false)
+            style.set("gap", "2px")
+            add(titleRow)
+            subtitle?.let { add(it) }
         }
 
         contentLayout.apply {
@@ -44,20 +70,24 @@ abstract class TADialog(
             style.set("margin-top", "16px")
         }
 
-        val header = VerticalLayout().apply {
-            setPadding(false)
-            setSpacing(false)
-            add(title)
-            subtitle?.let { add(it) }
-        }
-
         rootLayout.apply {
             setPadding(true)
             setSpacing(true)
-            add(header, contentLayout, buttonLayout)
+            add(headerLayout, contentLayout, buttonLayout)
         }
 
         super.add(rootLayout)
+    }
+
+    protected fun addHeaderBadge(component: Component) {
+        titleRow.add(component)
+    }
+
+    protected fun addHeaderBadgeRightAligned(
+        component: Component,
+    ) {
+        component.element.style.set("margin-left", "auto")
+        titleRow.add(component)
     }
 
     protected fun addContent(vararg components: Component) {

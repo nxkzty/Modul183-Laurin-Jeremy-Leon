@@ -1,8 +1,12 @@
 package ch.taskify.view.myTaskify.board
 
 import ch.taskify.dto.TaskDTO
+import ch.taskify.dto.UserDTO
+import ch.taskify.entity.task.Risk
 import ch.taskify.entity.task.State
 import ch.taskify.service.task.TaskService
+import ch.taskify.service.user.UserService
+import ch.taskify.utils.CurrentUser
 import ch.taskify.utils.notify.Notify
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.html.H1
@@ -19,23 +23,34 @@ import jakarta.annotation.security.PermitAll
 @PermitAll
 class Board(
     private val taskService: TaskService,
+    private val userService: UserService,
 ) : VerticalLayout() {
 
     private val boardContent = HorizontalLayout()
     private val outerLayout = HorizontalLayout()
     private var draggedTask: TaskDTO? = null
     private val columns = mutableListOf<BoardColumn>()
-    private var statsSidebar: BoardStatsSidebar? = null
+
+    private val users: List<UserDTO> by lazy {
+        userService.findAll()
+    }
+
+    private var searchFilter = ""
+    private var riskFilter: Set<Risk> = emptySet()
+    private var assigneeFilter: Set<String> = emptySet()
 
     init {
         setSizeFull()
         isPadding = false
         isSpacing = false
-        style
-            .set("background", "linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)")
-            .set("min-height", "100%")
 
+        style
+            .set(
+                "background",
+                "linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)"
+            )
         buildHeader()
+        buildFilters()
         buildBoard()
     }
 
@@ -58,17 +73,34 @@ class Board(
         val textBlock = VerticalLayout(title, subtitle).apply {
             isPadding = false
             isSpacing = false
-            style.set("gap", "4px")
+            style.set("gap", "6px")
         }
 
-        add(
-            HorizontalLayout(textBlock).apply {
+        add(HorizontalLayout(textBlock).apply {
                 setWidthFull()
                 defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
                 style
-                    .set("padding", "clamp(16px, 3vw, 28px) clamp(16px, 3vw, 32px) 20px")
+                    .set(
+                        "padding",
+                        "clamp(20px, 3vw, 30px) clamp(16px, 3vw, 32px) 20px"
+                    )
                     .set("box-sizing", "border-box")
             }
+        )
+    }
+
+    private fun buildFilters() {
+        add(
+            BoardFilterBar(
+                users = users,
+                onFilterChange = { search, risks, assignees ->
+                    searchFilter = search
+                    riskFilter = risks
+                    assigneeFilter = assignees
+
+                    refreshBoard()
+                }
+            )
         )
     }
 
@@ -80,12 +112,13 @@ class Board(
             width = "0"
             element.style.set("flex", "1 1 auto")
             style
-                .set("gap", "16px")
+                .set("gap", "18px")
                 .set("align-items", "stretch")
                 .set("flex-wrap", "nowrap")
                 .set("overflow-x", "auto")
-                .set("overflow-y", "visible")
+                .set("overflow-y", "hidden")
                 .set("min-width", "0")
+                .set("padding-bottom", "8px")
         }
 
         outerLayout.apply {
@@ -96,15 +129,15 @@ class Board(
             style
                 .set("display", "flex")
                 .set("flex-direction", "row")
-                .set("gap", "16px")
-                .set("padding", "0 clamp(16px, 3vw, 32px) 32px")
+                .set("gap", "8px")
+                .set(
+                    "padding",
+                    "0 clamp(16px, 3vw, 32px) 32px"
+                )
                 .set("box-sizing", "border-box")
                 .set("align-items", "stretch")
                 .set("overflow", "hidden")
         }
-
-        statsSidebar = BoardStatsSidebar(loadBoardTasks())
-        outerLayout.add(boardContent, statsSidebar)
 
         add(outerLayout)
         expand(outerLayout)
@@ -112,44 +145,81 @@ class Board(
     }
 
     private fun refreshBoard() {
-        val tasks = loadBoardTasks()
+        val tasks = filteredTasks()
         val tasksByState = tasks.groupBy { it.state }
-
         boardContent.removeAll()
         columns.clear()
+        outerLayout.removeAll()
 
-        statsSidebar?.let {
-            outerLayout.remove(it)
+        val sidebar = VerticalLayout(BoardStatsSidebar(tasks), BoardPeopleSidebar(tasks)
+        ).apply {
+            isPadding = false
+            isSpacing = false
+            style
+                .set("gap", "4px")
+                .set("padding-bottom", "8px")
+                .set("width", "fit-content")
+                .set("min-width", "0")
+                .set("flex-shrink", "0")
         }
-        statsSidebar = BoardStatsSidebar(tasks)
-        outerLayout.add(statsSidebar)
+
+        outerLayout.add(boardContent, sidebar)
 
         State.entries.forEach { state ->
             val column = BoardColumn(
                 state = state,
                 tasks = tasksByState[state].orEmpty(),
-                onDrop = { targetState -> moveDraggedTaskTo(targetState) },
-                cardFactory = { task -> createTaskCard(task) }
+                onDrop = { targetState ->
+                    moveDraggedTaskTo(targetState)
+                },
+                cardFactory = { task ->
+                    createTaskCard(task)
+                }
             )
+
             columns.add(column)
             boardContent.add(column)
         }
     }
 
-    private fun loadBoardTasks(): List<TaskDTO> {
+    private fun filteredTasks(): List<TaskDTO> {
         return taskService.getAll()
+            .filter {
+                val matchesSearch =
+                    it.title.contains(searchFilter, true) ||
+                            it.description.contains(searchFilter, true)
+                val matchesRisk =
+                    riskFilter.isEmpty() ||
+                            riskFilter.contains(it.risk)
+                val matchesAssignee =
+                    assigneeFilter.isEmpty() ||
+                            assigneeFilter.contains(
+                                it.assigneeUsername
+                            )
+                matchesSearch &&
+                        matchesRisk &&
+                        matchesAssignee
+            }
     }
 
     private fun createTaskCard(task: TaskDTO): Component {
         return BoardTaskCard(
             task = task,
+            taskService = taskService,
+            users = users,
+            currentUsername = CurrentUser.name,
+            onRefresh = { refreshBoard() },
             onDragStart = {
                 draggedTask = task
-                columns.forEach { it.highlightDropZone() }
+                columns.forEach {
+                    it.highlightDropZone()
+                }
             },
             onDragEnd = {
                 draggedTask = null
-                columns.forEach { it.clearHighlight() }
+                columns.forEach {
+                    it.clearHighlight()
+                }
             }
         )
     }
@@ -158,13 +228,20 @@ class Board(
         val task = draggedTask ?: return
         if (task.state == targetState) return
 
-        val updatedTask = task.copy(state = targetState)
+        val updatedTask =
+            task.copy(state = targetState)
+
         taskService.update(task.id!!, updatedTask)
         draggedTask = null
 
-        columns.forEach { it.clearHighlight() }
+        columns.forEach {
+            it.clearHighlight()
+        }
+
         refreshBoard()
 
-        Notify.success("Status auf ${targetState.displayName} geändert.")
+        Notify.success(
+            "Status auf ${targetState.displayName} geändert."
+        )
     }
 }
