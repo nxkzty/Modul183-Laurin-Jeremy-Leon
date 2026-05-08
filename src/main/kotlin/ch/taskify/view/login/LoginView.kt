@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import com.vaadin.flow.spring.security.AuthenticationContext
 
-@Route("login", autoLayout = false)
+@Route("login")
 @AnonymousAllowed
 class LoginView(private val authenticationContext: AuthenticationContext) : VerticalLayout(), BeforeEnterObserver {
 

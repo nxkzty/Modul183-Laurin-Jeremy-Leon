@@ -1,4 +1,27 @@
 package ch.taskify.dto
 
-data class UserDTO(val name: String,
-    val passwordHash: String)
+import ch.taskify.entity.user.Role
+import java.util.UUID
+
+/*
+ * UserDTO.java  
+ *
+ * Creator:
+ * 04.05.2026 14:44 laurin.ebnoether
+ *
+ * Maintainer:
+ * 04.05.2026 14:44 laurin.ebnoether
+ *
+ * Last Modification:
+ * $Id:$
+ *
+ * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
+ */
+data class UserDTO(
+    val id : UUID?,
+    val name: String,
+    val passwordHash: String,
+    val role: Role
+)
+
+

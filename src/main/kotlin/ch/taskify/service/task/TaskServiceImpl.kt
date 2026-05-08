@@ -1,40 +1,53 @@
 package ch.taskify.service.task
 
+import ch.taskify.dto.TaskDTO
 import ch.taskify.entity.task.Task
 import ch.taskify.repository.TaskRepository
-import org.springframework.stereotype.Service
+import ch.taskify.repository.UserRepository
+import ch.taskify.utils.CurrentUser
 import jakarta.persistence.EntityNotFoundException
-import java.util.UUID
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneId
+import java.util.*
 
 @Service
+@Transactional
 class TaskServiceImpl(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val userRepository: UserRepository,
+
 ) : TaskService {
 
-    override fun create(task: Task): Task {
-        return taskRepository.save(task)
+    override fun create(task: TaskDTO): TaskDTO {
+        return taskRepository.save(task.toEntity()).toDto()
     }
 
-    override fun getById(id: UUID): Task {
+    @Transactional(readOnly = true)
+    override fun getById(id: UUID): TaskDTO {
         return taskRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Task with id $id not found") }
+            .toDto()
     }
 
-    override fun getAll(): List<Task> {
-        return taskRepository.findAll()
+    @Transactional(readOnly = true)
+    override fun getAll(): List<TaskDTO> {
+        return taskRepository.findAll().map { it.toDto() }
     }
 
-    override fun update(id: UUID, task: Task): Task {
-        val existing = getById(id)
+    override fun update(id: UUID, task: TaskDTO): TaskDTO {
+        val existing = taskRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Task with id $id not found") }
 
         existing.title = task.title
         existing.description = task.description
         existing.state = task.state
-        existing.assignee = task.assignee
-        existing.issuer = task.issuer
         existing.risk = task.risk
+        existing.assignee = task.assigneeUsername
+            ?.trim()
+            ?.let { userRepository.findByNameIgnoreCase(it) }
 
-        return taskRepository.save(existing)
+        return taskRepository.save(existing).toDto()
     }
 
     override fun delete(id: UUID) {
@@ -43,4 +56,40 @@ class TaskServiceImpl(
         }
         taskRepository.deleteById(id)
     }
+
+    override fun getAllFromCurrentUser(): List<TaskDTO> {
+        val principal = CurrentUser.principalAsUserEntity
+        val currentUserId = principal?.id ?: return emptyList()
+        return taskRepository.findByAssignee_Id(currentUserId)
+            .map { task -> task.toDto() }
+    }
+
+    private fun Task.toDto(): TaskDTO =
+        TaskDTO(
+            id = this.id!!,
+            title = this.title,
+            description = this.description,
+            state = this.state,
+            risk = this.risk,
+            assigneeUsername = this.assignee?.name,
+            issuerUsername = this.issuer?.name,
+            createdAt = this.createdAt
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+        )
+
+    private fun TaskDTO.toEntity(): Task =
+        Task().apply {
+            title = this@toEntity.title
+            description = this@toEntity.description
+            state = this@toEntity.state
+            risk = this@toEntity.risk
+            assignee = this@toEntity.assigneeUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
+
+            issuer = this@toEntity.issuerUsername
+                ?.trim()
+                ?.let { userRepository.findByNameIgnoreCase(it) }
+        }
 }
