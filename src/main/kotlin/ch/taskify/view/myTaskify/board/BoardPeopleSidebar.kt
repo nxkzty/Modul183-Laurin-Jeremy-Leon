@@ -45,7 +45,6 @@ class BoardPeopleSidebar(
             )
 
         add(buildHeader(), buildContentWrapper())
-
         setExpanded(initiallyExpanded)
     }
 

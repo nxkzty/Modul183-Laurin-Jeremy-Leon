@@ -11,21 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
-/*
- * SecurityConfig.java  
- *
- * Creator:
- * 04.05.2026 08:30 laurin.ebnoether
- *
- * Maintainer:
- * 04.05.2026 08:30 laurin.ebnoether
- *
- * Last Modification:
- * $Id:$
- *
- * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
- */
-
 @EnableWebSecurity
 @Configuration
 class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl) {
