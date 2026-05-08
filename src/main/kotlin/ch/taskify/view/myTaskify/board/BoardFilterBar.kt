@@ -76,33 +76,21 @@ class BoardFilterBar(
         add(filterContainer)
     }
 
-    private fun buildToggleHeader(): HorizontalLayout {
+    private fun buildToggleHeader(): Button {
 
-        val icon = Icon(VaadinIcon.FILTER).apply {
-            setSize("16px")
-        }
-        val text = com.vaadin.flow.component.html.Span("Filter")
-
-        return HorizontalLayout(icon, text).apply {
-
+        val filterButton = Button("Filter", Icon(VaadinIcon.FILTER)).apply {
             alignItems = FlexComponent.Alignment.CENTER
             isSpacing = true
 
-            style
-                .set("cursor", "pointer")
-                .set("font-weight", "600")
-                .set("gap", "8px")
-                .set("padding", "8px 12px")
-                .set("border-radius", "12px")
-                .set("background", "rgba(241,245,249,0.6)")
-
+            addThemeVariants(ButtonVariant.LUMO_TERTIARY)
             addClickListener {
-
                 expanded = !expanded
                 filterContainer.isVisible = expanded
-
             }
         }
+
+        return filterButton
+
     }
 
     private fun buildSearch() {
