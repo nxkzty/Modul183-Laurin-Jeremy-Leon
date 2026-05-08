@@ -25,7 +25,9 @@ class TasksGrid(
 
     init {
         width = "100%"
+        setHeightFull()
         addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
+        isAllRowsVisible = true
         style
             .set("border-radius", "12px")
             .set("overflow", "hidden")
@@ -34,8 +36,7 @@ class TasksGrid(
         addColumn(TaskDTO::title)
             .setHeader("Titel")
             .setAutoWidth(true)
-            .setFlexGrow(1)
-            .setSortable(true)
+            .setFlexGrow(1).isSortable = true
 
         addColumn { task ->
             if (task.description.length > 50)
@@ -43,28 +44,23 @@ class TasksGrid(
             else
                 task.description
         }.setHeader("Beschreibung")
-            .setFlexGrow(2)
-            .setSortable(true)
+            .setFlexGrow(2).isSortable = true
 
         addComponentColumn { task ->
             TaskBadges.stateBadge(task.state)
-        }.setHeader("Status")
-            .setSortable(true)
+        }.setHeader("Status").isSortable = true
 
         addComponentColumn { task ->
             TaskBadges.riskBadge(task.risk)
-        }.setHeader("Risiko")
-            .setSortable(true)
+        }.setHeader("Risiko").isSortable = true
 
         addComponentColumn { task ->
             userCell(task.assigneeUsername)
-        }.setHeader("Verantwortlich")
-            .setSortable(true)
+        }.setHeader("Verantwortlich").isSortable = true
 
         addComponentColumn { task ->
             userCell(task.issuerUsername)
-        }.setHeader("Erstellt von")
-            .setSortable(true)
+        }.setHeader("Erstellt von").isSortable = true
 
         addComponentColumn { task ->
             val edit = Button(Icon(VaadinIcon.EDIT)).apply {
@@ -102,6 +98,8 @@ class TasksGrid(
                 onEdit = { openEditDialog(event.item) }
             ).open()
         }
+
+        onRefresh
     }
 
     private fun openEditDialog(task: TaskDTO) {

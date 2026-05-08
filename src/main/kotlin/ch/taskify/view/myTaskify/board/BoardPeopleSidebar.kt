@@ -21,6 +21,7 @@ class BoardPeopleSidebar(
     private val contentWrapper = VerticalLayout()
 
     private val toggleIcon = Icon(VaadinIcon.ANGLE_LEFT)
+    private val peopleIcon = createPeopleIcon()
     private lateinit var headerLabel: Span
 
     init {
@@ -39,18 +40,10 @@ class BoardPeopleSidebar(
             .set("transition", "width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease")
 
         add(buildHeader(), buildContentWrapper())
-
         setExpanded(initiallyExpanded)
     }
 
     private fun buildHeader(): HorizontalLayout {
-        val icon = Icon(VaadinIcon.USERS).apply {
-            style
-                .set("width", "16px")
-                .set("height", "16px")
-                .set("color", "#64748b")
-        }
-
         headerLabel = Span("Offene Aufgaben pro Person").apply {
             style
                 .set("font-size", "11px")
@@ -69,7 +62,7 @@ class BoardPeopleSidebar(
                 .set("transition", "transform 0.3s ease")
         }
 
-        return HorizontalLayout(icon, headerLabel, toggleIcon).apply {
+        return HorizontalLayout(peopleIcon, headerLabel, toggleIcon).apply {
             setWidthFull()
 
             isPadding = false
@@ -92,6 +85,13 @@ class BoardPeopleSidebar(
                 toggle()
             }
         }
+    }
+
+    private fun createPeopleIcon(): Icon = Icon(VaadinIcon.USERS).apply {
+        style
+            .set("width", "16px")
+            .set("height", "16px")
+            .set("color", "#64748b")
     }
 
     private fun buildContentWrapper(): VerticalLayout {
