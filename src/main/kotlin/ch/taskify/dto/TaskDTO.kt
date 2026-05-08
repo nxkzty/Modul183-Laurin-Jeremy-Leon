@@ -11,7 +11,7 @@ data class TaskDTO(
     var description: String = "",
     var state: State = State.OPEN,
     var risk: Risk? = null,
-    var assigneeUsername: String? = null,
+    var assigneeUsername: String? = "Nicht Zugewiesen",
     var issuerUsername: String? = null,
     var createdAt: LocalDateTime? = null
     )

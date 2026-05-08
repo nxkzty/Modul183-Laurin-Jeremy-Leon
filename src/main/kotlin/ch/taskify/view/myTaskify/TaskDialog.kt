@@ -55,7 +55,6 @@ class TaskDialog(
 
         title.isRequiredIndicatorVisible = true
         state.isRequiredIndicatorVisible = true
-        assignee.isRequiredIndicatorVisible = true
 
         binder.forField(title)
             .asRequired("Titel ist erforderlich")
@@ -74,7 +73,6 @@ class TaskDialog(
             .bind(TaskDTO::risk, TaskDTO::risk::set)
 
         binder.forField(assignee)
-            .asRequired("Verantwortlicher ist erforderlich")
             .withConverter(
                 { user: UserDTO? -> user?.name },
                 { username: String? -> users.find { it.name == username } }
