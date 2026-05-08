@@ -41,8 +41,8 @@ class Board(
     private var riskFilter: Set<Risk> = emptySet()
     private var assigneeFilter: Set<String> = emptySet()
 
-    private var isPeopleBoardExpanded = true
     private var isStatsBoardExpanded = true
+    private var isPeopleBoardExpanded = false
 
     init {
 

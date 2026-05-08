@@ -56,7 +56,7 @@ class TasksGrid(
 
         addComponentColumn { task ->
             userCell(task.assigneeUsername)
-        }.setHeader("Zuständig").isSortable = true
+        }.setHeader("Verantwortlicher").isSortable = true
 
         addComponentColumn { task ->
             userCell(task.issuerUsername)

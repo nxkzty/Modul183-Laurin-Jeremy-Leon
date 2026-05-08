@@ -1,51 +1,71 @@
 package ch.taskify.utils.validation
 
+import ch.taskify.dto.UserDTO
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.binder.Binder
 
-class UserValidator() {
+class UserValidator(
+    private val binder: Binder<UserDTO>,
+    private val nameField: TextField,
+    private val passwordField: PasswordField,
+    private val confirmPasswordField: PasswordField
+) {
 
-    fun validate(
-        errorMessage: RegisterError,
-        nameField: TextField,
-        passwordField: PasswordField,
-        confirmPasswordField: PasswordField
-    ): Boolean {
-        var valid = true
+    init {
 
-        nameField.isInvalid = false
-        passwordField.isInvalid = false
-        confirmPasswordField.isInvalid = false
+        binder.forField(nameField)
+            .withValidator(
+                { !it.isNullOrBlank() },
+                "Name ist erforderlich"
+            )
+            .bind(UserDTO::name, UserDTO::name::set)
+
+        binder.forField(passwordField)
+            .withValidator(
+                { !it.isNullOrBlank() },
+                "Passwort ist erforderlich"
+            )
+            .withValidator(
+                { it.length >= 9 },
+                "Passwort muss mindestens 9 Zeichen haben"
+            )
+            .withValidator(
+                { it.any(Char::isUpperCase) },
+                "Passwort muss mindestens 1 Grossbuchstaben enthalten"
+            )
+            .withValidator(
+                { password ->
+                    password.any { !it.isLetterOrDigit() }
+                },
+                "Passwort muss mindestens 1 Sonderzeichen enthalten"
+            )
+            .bind(UserDTO::passwordHash, UserDTO::passwordHash::set)
+
+        binder.forField(confirmPasswordField)
+            .withValidator(
+                { !it.isNullOrBlank() },
+                "Passwort verifizieren ist erforderlich"
+            )
+            .withValidator(
+                { confirmPassword ->
+                    confirmPassword == passwordField.value
+                },
+                "Passwörter müssen übereinstimmen"
+            )
+            .bind( UserDTO::passwordHash, UserDTO::passwordHash::set)
+
+    }
+
+    fun validate(errorMessage: RegisterError): Boolean {
         errorMessage.hide()
 
-        val name : String = nameField.value
-        val password: String = passwordField.value
-        val confirmPassword: String = confirmPasswordField.value
+        val result = binder.validate()
 
-        if (name.isBlank()) {
-            nameField.isInvalid = true
-            nameField.errorMessage = "Name ist erforderlich"
-            valid = false
+        if (!result.isOk) {
+            errorMessage.show("Bitte Eingaben prüfen")
         }
 
-        if (password.isBlank()) {
-            passwordField.isInvalid = true
-            passwordField.errorMessage = "Passwort ist erforderlich"
-            valid = false
-        }
-
-        if (confirmPassword.isBlank()) {
-            confirmPasswordField.isInvalid = true
-            confirmPasswordField.errorMessage = "Passwort verifizieren ist erforderlich"
-            valid = false
-        }
-
-        if (valid && password != confirmPassword) {
-            confirmPasswordField.isInvalid = true
-            confirmPasswordField.errorMessage = "Passwörter müssen übereinstimmen"
-            return false
-        }
-
-        return valid
+        return result.isOk
     }
 }

@@ -111,7 +111,7 @@ class ViewTaskDialog(
         task.assigneeUsername?.let {
             content.add(
                 section(
-                    "Zuständig",
+                    "Verantwortlicher",
                     userRow(it)
                 )
             )

@@ -19,9 +19,9 @@ import java.util.UUID
  */
 data class UserDTO(
     val id : UUID?,
-    val name: String,
-    val passwordHash: String,
-    val role: Role
+    var name: String,
+    var passwordHash: String,
+    var role: Role
 )
 
 

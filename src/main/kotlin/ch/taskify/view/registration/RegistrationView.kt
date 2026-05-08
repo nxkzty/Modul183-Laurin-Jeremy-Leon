@@ -15,24 +15,11 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.auth.AnonymousAllowed
 import java.util.UUID
 
-/*
- * RegistrationView.java
- *
- * Creator:
- * 04.05.2026 13:01 laurin.ebnoether
- *
- * Maintainer:
- * 04.05.2026 13:01 laurin.ebnoether
- *
- * Last Modification:
- * $Id:$
- *
- * Copyright (c) 2026 ABACUS Research AG, All Rights Reserved
- */
 @Route("register")
 @AnonymousAllowed
 class RegistrationView(
@@ -40,11 +27,17 @@ class RegistrationView(
 ) : VerticalLayout() {
 
 
-    private val name = TextField("Name")
-    private val password = PasswordField("Passwort")
-    private val confirmPassword = PasswordField("Passwort verifizieren")
+    private var name = TextField("Name")
+    private var password = PasswordField("Passwort")
+    private var confirmPassword = PasswordField("Passwort verifizieren")
+    private var binder = Binder(UserDTO::class.java)
     private val registerButton = Button("Registrieren")
-    private var userValidator: UserValidator = UserValidator()
+    private var userValidator: UserValidator = UserValidator(
+        binder,
+        nameField = name,
+        passwordField = password,
+        confirmPasswordField = confirmPassword
+    )
     private val errorMessage = RegisterError()
 
     init {
@@ -68,12 +61,7 @@ class RegistrationView(
             addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             width = "100%"
             addClickListener {
-                val isValid = userValidator.validate(
-                    errorMessage,
-                    name,
-                    password,
-                    confirmPassword
-                )
+                val isValid = userValidator.validate(errorMessage)
                 if (isValid) {
                     val userDTO = UserDTO(
                         UUID.randomUUID(),
