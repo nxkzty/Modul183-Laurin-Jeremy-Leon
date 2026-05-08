@@ -101,11 +101,6 @@ class BoardFilterBar(
                 expanded = !expanded
                 filterContainer.isVisible = expanded
 
-                icon.style.set(
-                    "transform",
-                    if (expanded) "rotate(360deg)" else "rotate(0deg)"
-                )
-                icon.style.set("transition", "0.2s ease")
             }
         }
     }
