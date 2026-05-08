@@ -78,11 +78,6 @@ class BoardFilterBar(
 
     private fun buildToggleHeader(): Button {
 
-        val icon = Icon(VaadinIcon.FILTER).apply {
-            setSize("16px")
-        }
-        val text = com.vaadin.flow.component.html.Span("Filter")
-
         val filterButton = Button("Filter", Icon(VaadinIcon.FILTER)).apply {
             alignItems = FlexComponent.Alignment.CENTER
             isSpacing = true
