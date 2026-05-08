@@ -60,7 +60,7 @@ class TaskServiceImpl(
     override fun getAllFromCurrentUser(): List<TaskDTO> {
         val principal = CurrentUser.principalAsUserEntity
         val currentUserId = principal?.id ?: return emptyList()
-        return taskRepository.findByAssignee_Id(currentUserId)
+        return taskRepository.findByAssigneeId(currentUserId)
             .map { task -> task.toDto() }
     }
 
