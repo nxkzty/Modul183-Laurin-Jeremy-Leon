@@ -21,19 +21,17 @@ class BoardFilterBar(
 ) : HorizontalLayout() {
 
     private val searchField = TextField()
-
     private val riskFilter = MultiSelectComboBox<Risk>()
-
     private val assigneeFilter = MultiSelectComboBox<String>()
 
+    private val filterContainer = HorizontalLayout()
+    private var expanded = false
+
     init {
-
         setWidthFull()
-
         isPadding = false
         isSpacing = false
-
-        alignItems = FlexComponent.Alignment.CENTER
+        alignItems = FlexComponent.Alignment.START
 
         style
             .set("gap", "14px")
@@ -41,13 +39,18 @@ class BoardFilterBar(
             .set("box-sizing", "border-box")
             .set("flex-wrap", "wrap")
 
-        val filterContainer = HorizontalLayout().apply {
+        add(buildToggleHeader())
 
+        buildSearch()
+        buildRiskFilter()
+        buildAssigneeFilter(users)
+
+        val resetButton = buildResetButton()
+
+        filterContainer.apply {
             setWidthFull()
-
             isPadding = false
             isSpacing = false
-
             alignItems = FlexComponent.Alignment.CENTER
 
             style
@@ -61,12 +64,6 @@ class BoardFilterBar(
                 .set("flex-wrap", "wrap")
         }
 
-        buildSearch()
-        buildRiskFilter()
-        buildAssigneeFilter(users)
-
-        val resetButton = buildResetButton()
-
         filterContainer.add(
             searchField,
             riskFilter,
@@ -74,29 +71,45 @@ class BoardFilterBar(
             resetButton
         )
 
+        filterContainer.isVisible = false
+
         add(filterContainer)
     }
 
-    private fun buildSearch() {
+    private fun buildToggleHeader(): Button {
 
+        val icon = Icon(VaadinIcon.FILTER).apply {
+            setSize("16px")
+        }
+        val text = com.vaadin.flow.component.html.Span("Filter")
+
+        val filterButton = Button("Filter", Icon(VaadinIcon.FILTER)).apply {
+            alignItems = FlexComponent.Alignment.CENTER
+            isSpacing = true
+
+            addThemeVariants(ButtonVariant.LUMO_TERTIARY)
+            addClickListener {
+                expanded = !expanded
+                filterContainer.isVisible = expanded
+            }
+        }
+
+        return filterButton
+
+    }
+
+    private fun buildSearch() {
         searchField.placeholder = "Aufgaben suchen..."
         searchField.prefixComponent = Icon(VaadinIcon.SEARCH)
-
         searchField.isClearButtonVisible = true
 
-        searchField.style
-            .set("min-width", "280px")
+        searchField.style.set("min-width", "280px")
+        searchField.element.style.set("border-radius", "14px")
 
-        searchField.element.style
-            .set("border-radius", "14px")
-
-        searchField.addValueChangeListener {
-            fireFilterChanged()
-        }
+        searchField.addValueChangeListener { fireFilterChanged() }
     }
 
     private fun buildRiskFilter() {
-
         riskFilter.setItems(Risk.entries)
 
         riskFilter.setItemLabelGenerator {
@@ -108,43 +121,24 @@ class BoardFilterBar(
         }
 
         riskFilter.placeholder = "Risiken auswählen"
+        riskFilter.style.set("min-width", "240px")
+        riskFilter.element.style.set("border-radius", "14px")
 
-        riskFilter.style
-            .set("min-width", "240px")
-
-        riskFilter.element.style
-            .set("border-radius", "14px")
-
-        riskFilter.addValueChangeListener {
-            fireFilterChanged()
-        }
+        riskFilter.addValueChangeListener { fireFilterChanged() }
     }
 
     private fun buildAssigneeFilter(users: List<UserDTO>) {
-
-        assigneeFilter.setItems(
-            users.map { it.name }.sorted()
-        )
+        assigneeFilter.setItems(users.map { it.name }.sorted())
 
         assigneeFilter.placeholder = "Mitarbeiter auswählen"
+        assigneeFilter.style.set("min-width", "320px")
+        assigneeFilter.element.style.set("border-radius", "14px")
 
-        assigneeFilter.style
-            .set("min-width", "320px")
-
-        assigneeFilter.element.style
-            .set("border-radius", "14px")
-
-        assigneeFilter.addValueChangeListener {
-            fireFilterChanged()
-        }
+        assigneeFilter.addValueChangeListener { fireFilterChanged() }
     }
 
     private fun buildResetButton(): Button {
-
-        return Button(
-            "Reset",
-            Icon(VaadinIcon.CLOSE_SMALL)
-        ).apply {
+        return Button("Reset", Icon(VaadinIcon.CLOSE_SMALL)).apply {
 
             addThemeVariants(ButtonVariant.LUMO_TERTIARY)
 
@@ -153,55 +147,17 @@ class BoardFilterBar(
                 .set("border-radius", "14px")
                 .set("padding", "0 16px")
                 .set("font-weight", "600")
-                .set("background", "rgba(241,245,249,0.85)")
-                .set("border", "1px solid rgba(148,163,184,0.18)")
-                .set("cursor", "pointer")
-                .set(
-                    "transition",
-                    "all 0.18s ease"
-                )
-
-            element.addEventListener("mouseover") {
-
-                style
-                    .set(
-                        "background",
-                        "rgba(226,232,240,1)"
-                    )
-                    .set(
-                        "transform",
-                        "translateY(-1px)"
-                    )
-            }
-
-            element.addEventListener("mouseout") {
-
-                style
-                    .set(
-                        "background",
-                        "rgba(241,245,249,0.85)"
-                    )
-                    .set(
-                        "transform",
-                        "translateY(0)"
-                    )
-            }
 
             addClickListener {
-
                 searchField.clear()
-
                 riskFilter.clear()
-
                 assigneeFilter.clear()
-
                 fireFilterChanged()
             }
         }
     }
 
     private fun fireFilterChanged() {
-
         onFilterChange(
             searchField.value ?: "",
             riskFilter.selectedItems,

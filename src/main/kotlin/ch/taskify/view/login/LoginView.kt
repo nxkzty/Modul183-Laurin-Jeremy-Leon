@@ -14,7 +14,9 @@ import com.vaadin.flow.spring.security.AuthenticationContext
 @AnonymousAllowed
 class LoginView(private val authenticationContext: AuthenticationContext) : VerticalLayout(), BeforeEnterObserver {
 
-    private val login = LoginForm()
+    private val login = LoginForm().apply {
+        isForgotPasswordButtonVisible = false
+    }
 
     init {
         setSizeFull()
