@@ -9,4 +9,5 @@ import java.util.UUID
 interface UserRepository : JpaRepository<UserEntity, UUID> {
     fun findByNameIgnoreCase(username: String): UserEntity?
     fun existsByNameIgnoreCase(username: String): Boolean
+    fun findByTeamsId(teamId: UUID): List<UserEntity>
 }
