@@ -14,4 +14,6 @@ interface TeamRepository : JpaRepository<Team, UUID> {
 
     @Query("select t from UserEntity u join u.teams t where u.id = :userId")
     fun findByUserId(@Param("userId") userId: UUID): List<Team>
+
+    fun findByTeamLeaderId(userId: UUID): List<Team>
 }

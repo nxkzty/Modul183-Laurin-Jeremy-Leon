@@ -199,10 +199,18 @@ class Team(
 
     private fun refreshPage(selectedTeamId: UUID? = activeTeamSelect.value?.id) {
         allTeams = teamService.findAll()
+
         visibleTeams = if (isAdmin) {
             allTeams
         } else {
-            CurrentUser.principalAsUserEntity?.id?.let { teamService.findByUserId(it) }.orEmpty()
+            val userId = CurrentUser.principalAsUserEntity?.id
+
+            userId?.let {
+                val memberTeams = teamService.findByUserId(it)
+                val leaderTeams = teamService.findByLeaderId(it)
+
+                (memberTeams + leaderTeams).distinctBy { team -> team.id }
+            }.orEmpty()
         }
 
         val selectableTeams = if (isAdmin) allTeams else visibleTeams

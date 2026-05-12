@@ -44,6 +44,24 @@ class TeamServiceImpl(
             .map { it.toDTO() }
     }
 
+    @Transactional(readOnly = true)
+    override fun findByLeaderId(userId: UUID): List<TeamDTO> {
+
+        log.info("Fetching leader teams for userId={}, actor={}", userId, CurrentUser.name)
+
+        val teams = teamRepository.findByTeamLeaderId(userId)
+            .sortedBy { it.name.orEmpty().lowercase() }
+
+        log.info(
+            "Leader teams loaded: userId={}, count={}, actor={}",
+            userId,
+            teams.size,
+            CurrentUser.name
+        )
+
+        return teams.map { it.toDTO() }
+    }
+
     override fun createTeam(name: String, userDTO: UserDTO ,description: String?): TeamDTO {
         requireAdmin()
 

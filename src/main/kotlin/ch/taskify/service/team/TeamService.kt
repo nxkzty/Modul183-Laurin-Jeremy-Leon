@@ -11,6 +11,8 @@ interface TeamService {
 
     fun findMembers(teamId: UUID): List<UserDTO>
 
+    fun findByLeaderId(userId: UUID): List<TeamDTO>
+
     fun createTeam(
         name: String,
         leader: UserDTO,
