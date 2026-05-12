@@ -18,8 +18,8 @@ class TeamMembersDialog(
     selectedMembers: List<UserDTO>,
     private val onSave: (userIds: Set<UUID>) -> Unit
 ) : TADialog(
-    titleText = "Mitglieder hinzufügen",
-    subtitleText = "Mitglieder für ${team.name} auswählen."
+    titleText = "Mitglieder hinzufÃ¼gen",
+    subtitleText = "Mitglieder fÃ¼r ${team.name} auswÃ¤hlen."
 ) {
 
     private val members = MultiSelectComboBox<UserDTO>("Mitglieder")
@@ -28,7 +28,7 @@ class TeamMembersDialog(
         setDialogWidth("620px")
 
         members.width = "100%"
-        members.placeholder = "User auswählen"
+        members.placeholder = "Teammitglied auswÃ¤hlen"
         members.setItems(users)
         members.setItemLabelGenerator { it.name }
         members.setRenderer(userRenderer())

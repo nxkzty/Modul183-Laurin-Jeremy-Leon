@@ -49,7 +49,7 @@ class Settings(
         }
 
         username.value = user.name
-        role.value = user.role.name
+        role.value = user.role.displayName
         role.isReadOnly = true
 
         add(buildCenteredLayout(user.name))
@@ -190,7 +190,7 @@ class Settings(
 
             Notify.success("User gespeichert.")
         } catch (exception: IllegalArgumentException) {
-            Notify.error(exception.message ?: "User konnte nicht gespeichert werden.")
+            Notify.error("User konnte nicht gespeichert werden.")
         }
     }
 

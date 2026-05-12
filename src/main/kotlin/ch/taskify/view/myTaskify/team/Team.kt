@@ -24,7 +24,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import jakarta.annotation.security.PermitAll
-import java.util.UUID
+import java.util.*
 
 @Route("myTaskify/team")
 @PageTitle("Mein Team")
@@ -40,6 +40,7 @@ class Team(
     private var visibleTeams: List<TeamDTO> = emptyList()
     private var allTeams: List<TeamDTO> = emptyList()
     private var users: List<UserDTO> = emptyList()
+    private var headerActions = HorizontalLayout()
 
     private val isAdmin: Boolean
         get() = CurrentUser.principalAsUserEntity?.role == Role.ADMIN
@@ -76,7 +77,10 @@ class Team(
             width = "260px"
             placeholder = "Team auswählen"
             setItemLabelGenerator { it.name }
-            addValueChangeListener { refreshOverview() }
+            addValueChangeListener {
+                refreshOverview()
+                refreshHeaderActions()
+            }
         }
 
         val textBlock = VerticalLayout(title, subtitle, activeTeamSelect).apply {
@@ -85,7 +89,12 @@ class Team(
             style.set("gap", "8px")
         }
 
-        val header = HorizontalLayout(textBlock).apply {
+        headerActions = HorizontalLayout().apply {
+            defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
+            isSpacing = true
+        }
+
+        val header = HorizontalLayout(textBlock, headerActions).apply {
             setWidthFull()
             justifyContentMode = FlexComponent.JustifyContentMode.BETWEEN
             defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
@@ -96,45 +105,53 @@ class Team(
                 .set("flex-wrap", "wrap")
         }
 
-        if (isAdmin) {
-            header.add(buildAdminActions())
-        }
-
+        refreshHeaderActions()
         return header
     }
 
-    private fun buildAdminActions(): HorizontalLayout {
-        val createTeam = Button("Team erstellen", Icon(VaadinIcon.PLUS)) {
-            TeamCreateDialog(
-                onCreate = { name, description ->
-                    createTeam(name, description)
-                }
-            ).open()
-        }.apply {
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
-        }
+    private fun refreshHeaderActions() {
+        headerActions.removeAll()
 
-        val addMembers = Button("Mitglieder hinzufügen", Icon(VaadinIcon.USERS)) {
-            val activeTeam = activeTeamSelect.value
-            if (activeTeam?.id == null) {
-                Notify.warning("Bitte zuerst ein aktives Team auswählen.")
-                return@Button
+        if (isAdmin) {
+            val createTeam = Button("Team erstellen", Icon(VaadinIcon.PLUS)) {
+                TeamCreateDialog(
+                    onCreate = { name, teamLeader ,description -> createTeam(name, teamLeader ,description) },
+                    users = users
+                ).open()
+            }.apply {
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
             }
-
-            TeamMembersDialog(
-                team = activeTeam,
-                users = users,
-                selectedMembers = teamService.findMembers(activeTeam.id),
-                onSave = { userIds -> saveMembers(activeTeam, userIds) }
-            ).open()
-        }.apply {
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            headerActions.add(createTeam)
         }
 
-        return HorizontalLayout(createTeam, addMembers).apply {
-            defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
-            isSpacing = true
+        if (canManageMembers(activeTeamSelect.value)) {
+            val addMembers = Button("Mitglieder verwalten", Icon(VaadinIcon.USERS)) {
+                val activeTeam = activeTeamSelect.value
+                if (activeTeam?.id == null) {
+                    Notify.warning("Bitte zuerst ein aktives Team auswählen.")
+                    return@Button
+                }
+
+                TeamMembersDialog(
+                    team = activeTeam,
+                    users = users,
+                    selectedMembers = teamService.findMembers(activeTeam.id),
+                    onSave = { userIds -> saveMembers(activeTeam, userIds) }
+                ).open()
+            }.apply {
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY)
+            }
+            headerActions.add(addMembers)
         }
+    }
+
+    private val currentUserId: UUID?
+        get() = CurrentUser.principalAsUserEntity?.id
+
+    private fun canManageMembers(team: TeamDTO?): Boolean {
+        if (team == null) return false
+        if (isAdmin) return true
+        return team.teamLeaderId == currentUserId
     }
 
     private fun buildOverview(): VerticalLayout {
@@ -211,22 +228,24 @@ class Team(
         }
     }
 
-    private fun createTeam(name: String, description: String?) {
+    private fun createTeam(name: String, teamLeader: UserDTO ,description: String?) {
         try {
-            val createdTeam = teamService.createTeam(name, description)
+            val createdTeam = teamService.createTeam(name, teamLeader, description)
             refreshPage(createdTeam.id)
             Notify.success("Team erstellt.")
         } catch (exception: IllegalArgumentException) {
-            Notify.error(exception.message ?: "Team konnte nicht erstellt werden.")
+            Notify.error("Team konnte nicht erstellt werden.")
         }
     }
 
     private fun saveMembers(team: TeamDTO, userIds: Set<UUID>) {
         val teamId = team.id ?: return
+        val idsWithLeader: Set<UUID>
         teamService.updateMembers(teamId, userIds)
         refreshPage(teamId)
         Notify.success("Mitglieder gespeichert.")
     }
+
 
     private fun teamCard(team: TeamDTO): Component {
         val members = team.id?.let { teamService.findMembers(it) }.orEmpty()
@@ -278,7 +297,15 @@ class Team(
             members.forEach { member -> memberList.add(memberRow(member)) }
         }
 
-        return VerticalLayout(header, description, memberList).apply {
+        val leader = Span(
+            "Teamleiter: ${team.teamLeaderName ?: "Nicht zugewiesen"}"
+        ).apply {
+            style
+                .set("color", "var(--lumo-secondary-text-color)")
+                .set("font-size", "13px")
+        }
+
+        return VerticalLayout(header, description, leader, memberList).apply {
             isPadding = true
             isSpacing = false
             style
@@ -310,7 +337,7 @@ class Team(
                 .set("font-size", "14px")
         }
 
-        val role = Span(user.role.name).apply {
+        val role = Span(user.role.displayName).apply {
             style
                 .set("color", "var(--lumo-secondary-text-color)")
                 .set("font-size", "12px")

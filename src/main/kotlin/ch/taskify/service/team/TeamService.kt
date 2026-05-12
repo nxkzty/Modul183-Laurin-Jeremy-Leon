@@ -13,6 +13,7 @@ interface TeamService {
 
     fun createTeam(
         name: String,
+        leader: UserDTO,
         description: String? = null
     ): TeamDTO
 
