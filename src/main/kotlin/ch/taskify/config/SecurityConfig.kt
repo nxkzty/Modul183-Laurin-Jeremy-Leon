@@ -17,13 +17,16 @@ class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http.authorizeHttpRequests {
+            it.requestMatchers("/icons/**").permitAll()
+        }
+
         http.with(VaadinSecurityConfigurer.vaadin()) { vaadin ->
             vaadin.loginView(LoginView::class.java)
         }
             .logout { logout ->
                 logout.logoutSuccessUrl("/")
                 logout.invalidateHttpSession(true)
-
             }
             .userDetailsService(userDetailsService)
 
@@ -31,8 +34,5 @@ class SecurityConfig(private val userDetailsService: UserDetailsServiceImpl) {
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
-
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

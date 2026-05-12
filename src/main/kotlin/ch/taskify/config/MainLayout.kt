@@ -11,7 +11,7 @@ import com.vaadin.flow.component.applayout.AppLayout
 import com.vaadin.flow.component.applayout.DrawerToggle
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.html.Image
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.sidenav.SideNav
@@ -220,17 +220,18 @@ class MainLayout(
 
         val link = RouterLink("", Home::class.java)
 
-        val text = Span("Taskify")
-        val dot = Span(".").apply {
-            style.set("color", "var(--lumo-primary-color)")
+        val logo = Image("icons/taskify-wordmark.svg", "TaskifyLogo").apply {
+            setHeight("40px")
+            style.set("width", "auto")
+            style.set("display", "block")
         }
 
-        link.add(text, dot)
+        link.add(logo)
 
-        link.style.set("font-size", "22px")
-        link.style.set("font-weight", "600")
         link.style.set("text-decoration", "none")
         link.style.set("color", "inherit")
+        link.style.set("display", "flex")
+        link.style.set("align-items", "center")
 
         return link
     }
