@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.doNothing
@@ -14,6 +15,8 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.Optional
 import java.util.UUID
@@ -24,8 +27,14 @@ class UserServiceImplTest {
     private val passwordEncoder = mock(PasswordEncoder::class.java)
     private val userService = UserServiceImpl(userRepository, passwordEncoder)
 
+    @AfterEach
+    fun tearDown() {
+        SecurityContextHolder.clearContext()
+    }
+
     @Test
     fun `createUser hashes password and saves normalized username`() {
+        authenticateAs(Role.ADMIN)
         `when`(userRepository.existsByNameIgnoreCase("admin")).thenReturn(false)
         `when`(passwordEncoder.encode("123")).thenReturn("hashed-123")
         `when`(userRepository.save(any(UserEntity::class.java))).thenAnswer { it.arguments[0] }
@@ -53,6 +62,7 @@ class UserServiceImplTest {
     @Test
     fun `updateUser changes username password and role`() {
         val userId = UUID.randomUUID()
+        authenticateAs(Role.ADMIN)
         val existingUser = UserEntity().apply {
             id = userId
             name = "admin"
@@ -79,6 +89,7 @@ class UserServiceImplTest {
 
     @Test
     fun `deleteUser removes existing user`() {
+        authenticateAs(Role.ADMIN)
         val userId = UUID.randomUUID()
         `when`(userRepository.existsById(userId)).thenReturn(true)
         doNothing().`when`(userRepository).deleteById(userId)
@@ -97,5 +108,16 @@ class UserServiceImplTest {
 
         assertNotNull(foundUser)
         assertEquals("admin", foundUser?.name)
+    }
+
+    private fun authenticateAs(role: Role, id: UUID = UUID.randomUUID()) {
+        val user = UserEntity().apply {
+            this.id = id
+            name = "actor"
+            this.role = role
+        }
+
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, null, user.authorities)
     }
 }

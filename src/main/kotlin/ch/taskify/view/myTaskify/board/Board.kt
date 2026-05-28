@@ -5,6 +5,7 @@ import ch.taskify.dto.UserDTO
 import ch.taskify.entity.task.Risk
 import ch.taskify.entity.task.State
 import ch.taskify.service.task.TaskService
+import ch.taskify.service.team.TeamService
 import ch.taskify.service.user.UserService
 import ch.taskify.utils.CurrentUser
 import ch.taskify.utils.notify.Notify
@@ -23,6 +24,7 @@ import jakarta.annotation.security.PermitAll
 @PermitAll
 class Board(
     private val taskService: TaskService,
+    private val teamService: TeamService,
     private val userService: UserService,
 ) : VerticalLayout() {
 
@@ -33,8 +35,11 @@ class Board(
 
     private val columns = mutableListOf<BoardColumn>()
 
-    private val users: List<UserDTO> by lazy {
+    private val boardUsers: List<UserDTO> by lazy {
+        val scopedUsernames = scopedUsernames()
         userService.findAll()
+            .filter { scopedUsernames.contains(it.name) }
+            .sortedBy { it.name.lowercase() }
     }
 
     private var searchFilter = ""
@@ -113,7 +118,7 @@ class Board(
 
         add(
             BoardFilterBar(
-                users = users,
+                users = boardUsers,
                 onFilterChange = {
                         search,
                         risks,
@@ -252,7 +257,7 @@ class Board(
 
     private fun filteredTasks(): List<TaskDTO> {
 
-        return taskService.getAll()
+        return scopedTasks()
             .filter {
 
                 val matchesSearch =
@@ -288,7 +293,7 @@ class Board(
         return BoardTaskCard(
             task = task,
             taskService = taskService,
-            users = users,
+            users = boardUsers,
             currentUsername = CurrentUser.name,
 
             onRefresh = {
@@ -313,6 +318,43 @@ class Board(
                 }
             }
         )
+    }
+
+    private fun scopedTasks(): List<TaskDTO> {
+        val currentUserId = CurrentUser.principalAsUserEntity?.id
+            ?: return emptyList()
+
+        val teamIds = teamService.findByUserId(currentUserId)
+            .mapNotNull { it.id }
+
+        if (teamIds.isEmpty()) {
+            return taskService.getAllFromCurrentUser()
+        }
+
+        val teamMemberNames = teamIds
+            .flatMap { teamService.findMembers(it) }
+            .map { it.name }
+            .toSet()
+
+        return taskService.getAll()
+            .filter { task -> task.assigneeUsername in teamMemberNames }
+    }
+
+    private fun scopedUsernames(): Set<String> {
+        val currentUserId = CurrentUser.principalAsUserEntity?.id
+            ?: return emptySet()
+
+        val teamIds = teamService.findByUserId(currentUserId)
+            .mapNotNull { it.id }
+
+        if (teamIds.isEmpty()) {
+            return setOf(CurrentUser.name)
+        }
+
+        return teamIds
+            .flatMap { teamService.findMembers(it) }
+            .map { it.name }
+            .toSet()
     }
 
     private fun moveDraggedTaskTo(

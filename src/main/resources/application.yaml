@@ -14,4 +14,9 @@ spring:
   flyway:
     enabled: true
 vaadin:
-  launch-browser: true
+  launch-browser: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
