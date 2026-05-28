@@ -125,14 +125,14 @@ class TeamServiceImpl(
         val isAdmin = currentUser.role == Role.ADMIN
         val isLeader = team.teamLeader?.id == currentUser.id
 
-        if (!isAdmin && !isLeader) {
+        if (!isAdmin || !isLeader) {
             log.warn(
                 "Denied team member update: actor={}, teamId={}, leaderId={}",
                 CurrentUser.name,
                 team.id,
                 team.teamLeader?.id
             )
-            throw AccessDeniedException("Nur Admin oder Teamleiter dieses Teams dürfen Mitglieder verwalten.")
+            throw AccessDeniedException("Nur Admin oder Teamleiter dieses Teams dï¿½rfen Mitglieder verwalten.")
         }
     }
 
