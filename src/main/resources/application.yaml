@@ -5,9 +5,9 @@ spring:
     compose:
       lifecycle-management: start_only
   datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    url: ${DATABASE_URL}
   jpa:
     hibernate:
       ddl-auto: none
