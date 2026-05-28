@@ -7,11 +7,16 @@ spring:
   datasource:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://localhost:${DB_PORT}/${DB_NAME}
   jpa:
     hibernate:
       ddl-auto: none
   flyway:
     enabled: true
 vaadin:
-  launch-browser: true
+  launch-browser: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

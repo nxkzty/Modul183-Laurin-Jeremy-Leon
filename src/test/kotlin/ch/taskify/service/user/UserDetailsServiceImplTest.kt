@@ -2,6 +2,7 @@ package ch.taskify.service.user
 
 import ch.taskify.entity.user.UserEntity
 import ch.taskify.repository.UserRepository
+import ch.taskify.service.security.LoginAttemptService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -12,7 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 class UserDetailsServiceImplTest {
 
     private val userRepository = mock(UserRepository::class.java)
-    private val userDetailsService = UserDetailsServiceImpl(userRepository)
+    private val loginAttemptService = mock(LoginAttemptService::class.java)
+    private val userDetailsService = UserDetailsServiceImpl(userRepository, loginAttemptService)
 
     @Test
     fun `loadUserByUsername returns trimmed username match`() {

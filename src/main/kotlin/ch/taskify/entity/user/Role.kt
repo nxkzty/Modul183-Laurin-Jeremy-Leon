@@ -1,6 +1,9 @@
 package ch.taskify.entity.user
 
-enum class Role {
-    USER,
-    ADMIN,
+enum class Role(val displayName: String) {
+    USER("Teammitglied"),
+    ADMIN("Administrator");
+
+    override fun toString(): String = displayName
+
 }
