@@ -7,7 +7,7 @@ spring:
   datasource:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
-    url: ${DATABASE_URL}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5434/railway}
   jpa:
     hibernate:
       ddl-auto: none
