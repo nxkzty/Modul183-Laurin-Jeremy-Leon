@@ -12,27 +12,27 @@ Taskify ist eine kleine Web-App zur Aufgabenverwaltung mit Login, Teams, Aufgabe
 
 ### 1. Datenbank starten
 
-Im Projektordner:
-
-```bash
-docker compose up -d
-```
-
 Die PostgreSQL-Datenbank wird mit diesen Werten aus `.env` gestartet:
+
+Mann musst zuerst das File `example.env` zu `.env` umwandeln.
 
 ```env
 POSTGRES_USERNAME=taskify
 POSTGRES_PASSWORD=taskifypw
 ```
 
+Starte den Docker-Desktop und dannach im Projektordner:
+
+```bash
+docker compose up -d
+```
 
 ### 2. Anwendung starten
 
 Danach starten:
+`bootRun`
 
-```bash
-./gradlew bootRun
-```
+![img.png](src/main/resources/img/img.png)
 
 Die App ist danach erreichbar unter:
 
@@ -44,10 +44,10 @@ http://localhost:8080
 
 Es gibt zwei Rollen:
 
-| Rolle | Bedeutung |
-|---|---|
+| Rolle | Bedeutung                        |
+|---|----------------------------------|
 | `USER` | Normaler Benutzer / Teammitglied |
-| `ADMIN` | Administrator |
+| `ADMIN` | Administrator / Team erstellen   |
 
 ### Normaler Benutzer
 
@@ -88,8 +88,13 @@ Ein Admin kann zusätzlich:
 
 Es gibt im Code keine fix vorbereiteten Testbenutzer. Beim ersten Start muss deshalb zuerst ein Benutzer registriert werden.
 
-Falls ein Admin benötigt wird, kann ein registrierter Benutzer direkt in der Datenbank auf `ADMIN` gesetzt werden:
-
+Falls ein Admin benötigt wird, kann ein registrierter Benutzer direkt in der Datenbank auf `ADMIN` gesetzt werden (in der Produktion würde das Suppor-Team diese Änderungen übernehmen):
+1. Öffne die DB-Settings, klicke dazu auf der rechten Seite auf das DB-Symbol.
+2. Verbinde dich mit der Datenbank. Benutze die Daten von dem `.env` File. Der Name muss auf `railway` gesetzt werden. (siehe Bild unten)
+![img_1.png](src/main/resources/img/img_1.png)
+3. Es sollte sich automatisch eine DB-Konsole öffnen. Wenn nicht mache einen rechts Klick auf `railway` und dann `New` und wähle dann `Query Console` aus.
+![img_2.png](src/main/resources/img/img_2.png)
+4. Danach führe dieses Script aus um dein User, Admin-Berechtigungen zu geben. 
 ```sql
 UPDATE user_entity
 SET role = 'ADMIN'
@@ -159,3 +164,9 @@ In den Settings kann der angemeldete Benutzer seine eigenen Daten anpassen:
 - Passwort ändern
 
 Die Rolle wird nur angezeigt und kann dort nicht direkt geändert werden.
+
+## Produktion
+Wir haben uns für die Seite [Railway.com](https://www.railway.com)  entschieden um unser Projekt zu veröffentlichen.
+
+Unsere Seite ist unter dieser URL verfügbar:
+[Taskify](https://modul183-laurin-jeremy-leon-production.up.railway.app/)
